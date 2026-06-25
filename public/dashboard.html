@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Interactive Dashboard | KickoffGen</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#004ac6",
+                        "inverse-primary": "#b4c5ff",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "surface-container-high": "#dce9ff",
+                        "status-warning": "#f59e0b",
+                        secondary: "#0058be",
+                        "on-surface": "#0b1c30",
+                        "on-secondary": "#ffffff",
+                        surface: "#f8f9ff",
+                        "on-tertiary-fixed-variant": "#7d2d00",
+                        "surface-dim": "#cbdbf5",
+                        "surface-muted": "#f8fafc",
+                        "outline-variant": "#c3c6d7",
+                        "accent-vivid": "#6161ff",
+                        "inverse-surface": "#213145",
+                        "surface-container-low": "#eff4ff",
+                        "status-error": "#ef4444",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#dbe1ff",
+                        "surface-variant": "#d3e4fe",
+                        "surface-tint": "#0053db",
+                        "border-subtle": "#e2e8f0",
+                        "inverse-on-surface": "#eaf1ff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "surface-container-highest": "#d3e4fe",
+                        "surface-container": "#e5eeff",
+                        "on-error": "#ffffff",
+                        "tertiary-container": "#bc4800",
+                        "secondary-container": "#2170e4",
+                        "surface-base": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "status-success": "#10b981",
+                        "on-background": "#0b1c30",
+                        "on-secondary-fixed-variant": "#004395",
+                        error: "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#eeefff",
+                        "surface-bright": "#f8f9ff",
+                        tertiary: "#943700",
+                        "on-tertiary-container": "#ffede6",
+                        "primary-container": "#2563eb",
+                        "on-surface-variant": "#434655",
+                        "secondary-fixed": "#d8e2ff",
+                        background: "#f8f9ff",
+                        outline: "#737686",
+                        "on-primary-fixed": "#00174b",
+                        "on-secondary-fixed": "#001a42",
+                        "tertiary-fixed-dim": "#ffb596",
+                        "on-secondary-container": "#fefcff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#ffdbcd",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-tertiary-fixed": "#360f00"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                    spacing: {
+                        "container-padding-desktop": "32px",
+                        "margin-md": "24px",
+                        gutter: "24px",
+                        "margin-sm": "12px",
+                        base: "8px",
+                        "container-padding-mobile": "16px"
+                    },
+                    fontFamily: {
+                        "body-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"]
+                    },
+                    fontSize: {
+                        "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+                        "headline-sm": ["18px", { lineHeight: "28px", fontWeight: "600" }],
+                        "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.01em", fontWeight: "500" }],
+                        "headline-md": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "600" }],
+                        "display-lg": ["36px", { lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+                        "label-sm": ["11px", { lineHeight: "14px", fontWeight: "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar-fixed { width: 240px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+            border-color: #2563eb !important;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen">
+
+    <!-- Global Toasts Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="fixed left-0 top-0 h-full sidebar-fixed bg-surface-container-lowest border-r border-border-subtle flex flex-col p-margin-sm gap-2 z-50">
+        <div class="px-3 py-4 mb-2">
+            <h1 class="font-headline-sm text-headline-sm text-on-surface font-extrabold tracking-tight">Project Kickoff</h1>
+            <p class="font-label-md text-label-md text-on-surface-variant opacity-70">IT Consultancy Suite</p>
+        </div>
+        
+        <nav class="flex-1 space-y-1" id="sidebar-nav">
+            <a class="nav-link flex items-center gap-3 px-3 py-2 bg-primary-container text-on-primary-container rounded-lg font-semibold font-label-md text-label-md" href="#" data-view="dashboard">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span>Dashboard</span>
+            </a>
+            <a class="nav-link flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low transition-all rounded-lg font-label-md text-label-md" href="#" data-view="project-creation">
+                <span class="material-symbols-outlined">add_box</span>
+                <span>Project Creation</span>
+            </a>
+            <a class="nav-link flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low transition-all rounded-lg font-label-md text-label-md" href="#" data-view="credentials">
+                <span class="material-symbols-outlined">vpn_key</span>
+                <span>Credentials</span>
+            </a>
+            <a class="nav-link flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low transition-all rounded-lg font-label-md text-label-md" href="#" data-view="communication">
+                <span class="material-symbols-outlined">forum</span>
+                <span>Communication</span>
+            </a>
+            <a class="nav-link flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low transition-all rounded-lg font-label-md text-label-md" href="#" data-view="timeline">
+                <span class="material-symbols-outlined">schedule</span>
+                <span>Timeline</span>
+            </a>
+            <a class="nav-link flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low transition-all rounded-lg font-label-md text-label-md" href="#" data-view="team-intro">
+                <span class="material-symbols-outlined">groups</span>
+                <span>Team Intro</span>
+            </a>
+            <a class="nav-link flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low transition-all rounded-lg font-label-md text-label-md" href="#" data-view="milestones">
+                <span class="material-symbols-outlined">checklist</span>
+                <span>Milestones</span>
+            </a>
+            <a class="nav-link flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low transition-all rounded-lg font-label-md text-label-md" href="#" data-view="preview">
+                <span class="material-symbols-outlined">visibility</span>
+                <span>Preview</span>
+            </a>
+            <a class="nav-link flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low transition-all rounded-lg font-label-md text-label-md" href="#" data-view="management">
+                <span class="material-symbols-outlined">inventory_2</span>
+                <span>Management</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto pt-4 space-y-1">
+            <button id="btn-new-project-sidebar" class="w-full bg-primary text-white font-label-md py-2.5 rounded-lg shadow-sm hover:opacity-90 active:scale-95 transition-all mb-4">
+                New Project
+            </button>
+            <a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low transition-all rounded-lg font-label-md text-label-md" href="#" onclick="showToast('Loading help center docs...', 'success'); return false;">
+                <span class="material-symbols-outlined">help</span>
+                <span>Help Center</span>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2 text-status-error hover:bg-error-container/10 transition-all rounded-lg font-label-md text-label-md" href="#" onclick="showToast('Signing out...', 'error'); return false;">
+                <span class="material-symbols-outlined">logout</span>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="ml-60 flex flex-col min-h-screen">
+        <!-- Top Nav Bar -->
+        <header class="h-16 bg-surface border-b border-border-subtle shadow-sm flex justify-between items-center px-container-padding-desktop sticky top-0 z-40">
+            <div class="flex items-center gap-6">
+                <span class="text-headline-sm font-headline-sm font-bold text-primary">KickoffGen</span>
+                <nav class="hidden md:flex items-center gap-4">
+                    <a class="text-primary font-bold border-b-2 border-primary font-body-md text-body-md" href="#" id="subnav-projects">Projects</a>
+                </nav>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <button class="p-2 text-on-surface-variant hover:bg-surface-muted transition-colors rounded-full relative" onclick="showToast('No new notifications', 'success')">
+                    <span class="material-symbols-outlined">notifications</span>
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-status-error rounded-full border border-white"></span>
+                </button>
+                <button class="p-2 text-on-surface-variant hover:bg-surface-muted transition-colors rounded-full" onclick="showToast('Opening settings...', 'success')">
+                    <span class="material-symbols-outlined">settings</span>
+                </button>
+                <div class="w-8 h-8 rounded-full overflow-hidden border border-border-subtle ml-2">
+                    <img alt="User profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7Qk6fsUnOGWZrr6x1jXkrICj7qQZch0GPR6q02C-ag7h7qqBkpwRCkgfLldj01t-GVXAVgkm7b2QAaH3oXtCHE9UdQnvVShiu5nAeTnqzabdQ4GCMEM3s_XmWsb5wKW7DbHf0TtGXHZgY0MpCpCLGsvgpsgH_fR8aGZiYfSzDHOAMp24X5_W_b0uIIfWoJuYHoTne7UwdQPP8rptwHpDvnrCz2nqx37wxVnJHuSO0Na4DbTjYf9HuxpX3AWlafe7VaUoEYdPq-l4"/>
+                </div>
+            </div>
+        </header>
+
+        <!-- View Containers -->
+        <div class="p-margin-md flex-1">
+            
+            <!-- Dashboard View -->
+            <div id="view-dashboard" class="view-content space-y-gutter max-w-5xl mx-auto">
+                <div class="mb-gutter flex justify-between items-end">
+                    <div>
+                        <h2 class="font-headline-md text-headline-md text-on-surface">Dashboard</h2>
+                        <p class="font-body-md text-body-md text-on-surface-variant">Overview of your consultancy portfolio and active engagements.</p>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-8">
+                    <div class="bg-surface-base border border-border-subtle rounded-xl p-margin-md shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary">folder</span>
+                            </div>
+                            <span class="text-label-sm font-label-sm text-status-success font-bold">+3</span>
+                        </div>
+                        <p class="font-display-lg text-display-lg text-on-surface" id="stat-active-projects">4</p>
+                        <p class="text-label-md text-on-surface-variant">Active Projects</p>
+                    </div>
+                    <div class="bg-surface-base border border-border-subtle rounded-xl p-margin-md shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary">groups</span>
+                            </div>
+                            <span class="text-label-sm font-label-sm text-status-success font-bold">+2</span>
+                        </div>
+                        <p class="font-display-lg text-display-lg text-on-surface" id="stat-team-members">6</p>
+                        <p class="text-label-md text-on-surface-variant">Team Members</p>
+                    </div>
+                    <div class="bg-surface-base border border-border-subtle rounded-xl p-margin-md shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary">task_alt</span>
+                            </div>
+                            <span class="text-label-sm font-label-sm text-status-success font-bold">+24</span>
+                        </div>
+                        <p class="font-display-lg text-display-lg text-on-surface">156</p>
+                        <p class="text-label-md text-on-surface-variant">Tasks Completed</p>
+                    </div>
+                    <div class="bg-surface-base border border-border-subtle rounded-xl p-margin-md shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary">flag</span>
+                            </div>
+                        </div>
+                        <p class="font-display-lg text-display-lg text-on-surface">8</p>
+                        <p class="text-label-md text-on-surface-variant">Upcoming Milestones</p>
+                    </div>
+                </div>
+
+                <!-- Main Layout Split -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+                    <!-- Left: Recent Projects Card List -->
+                    <div class="lg:col-span-2 bg-surface-base border border-border-subtle rounded-xl shadow-sm overflow-hidden">
+                        <div class="px-margin-md py-4 border-b border-border-subtle bg-surface-muted/50">
+                            <h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">
+                                Recent Projects
+                            </h3>
+                        </div>
+                        <div class="divide-y divide-border-subtle" id="recent-projects-list">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Right Sidebar: Quick Actions & Deadlines -->
+                    <div class="space-y-gutter">
+                        <!-- Quick Actions Section -->
+                        <div class="bg-surface-base border border-border-subtle rounded-xl p-margin-md shadow-sm">
+                            <h3 class="font-headline-sm text-headline-sm mb-4">Quick Actions</h3>
+                            <div class="space-y-3">
+                                <button id="btn-new-project-card" class="w-full flex items-center gap-3 p-3 bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors text-left">
+                                    <span class="material-symbols-outlined text-primary">add_box</span>
+                                    <span class="font-body-md text-body-md text-on-surface font-semibold">New Project</span>
+                                </button>
+                                <button id="btn-add-member" class="w-full flex items-center gap-3 p-3 bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors text-left">
+                                    <span class="material-symbols-outlined text-primary">person_add</span>
+                                    <span class="font-body-md text-body-md text-on-surface font-semibold">Add Team Member</span>
+                                </button>
+                                <button id="btn-generate-report" class="w-full flex items-center gap-3 p-3 bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors text-left">
+                                    <span id="report-icon" class="material-symbols-outlined text-primary font-bold">description</span>
+                                    <span id="report-text" class="font-body-md text-body-md text-on-surface font-semibold">Generate Report</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Upcoming Deadlines -->
+                        <div class="bg-surface-base border border-border-subtle rounded-xl p-margin-md shadow-sm">
+                            <h3 class="font-headline-sm text-headline-sm mb-4">Upcoming Deadlines</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                                        <span class="material-symbols-outlined text-primary">calendar_today</span>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="font-body-md text-body-md text-on-surface truncate">Architecture Review</p>
+                                        <p class="text-label-sm text-on-surface-variant truncate">Cloud Migration</p>
+                                    </div>
+                                    <span class="text-label-md font-label-md text-outline shrink-0">Oct 24</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                                        <span class="material-symbols-outlined text-primary">calendar_today</span>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="font-body-md text-body-md text-on-surface truncate">Client Presentation</p>
+                                        <p class="text-label-sm text-on-surface-variant truncate">API Redesign</p>
+                                    </div>
+                                    <span class="text-label-md font-label-md text-outline shrink-0">Oct 26</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                                        <span class="material-symbols-outlined text-primary">calendar_today</span>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="font-body-md text-body-md text-on-surface truncate">Sprint Review</p>
+                                        <p class="text-label-sm text-on-surface-variant truncate">Data Platform</p>
+                                    </div>
+                                    <span class="text-label-md font-label-md text-outline shrink-0">Oct 28</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SPA Mock Views Placeholder -->
+            <div id="view-placeholder" class="view-content hidden max-w-4xl mx-auto space-y-gutter">
+                <div class="bg-surface-base border border-border-subtle rounded-xl p-8 text-center shadow-sm">
+                    <span class="material-symbols-outlined text-[64px] text-primary/40 mb-4" id="placeholder-icon">construction</span>
+                    <h2 class="font-headline-md text-headline-md text-on-surface mb-2" id="placeholder-title">Section Title</h2>
+                    <p class="font-body-md text-body-md text-on-surface-variant max-w-md mx-auto mb-6" id="placeholder-desc">This is a fully-styled interactive placeholder for the respective consultant kickoff flow view.</p>
+                    <button class="px-6 py-2 bg-primary text-white font-label-md font-bold rounded-lg shadow-sm hover:opacity-95 active:scale-95 duration-150 transition-all" onclick="navigateTo('dashboard')">
+                        Back to Dashboard
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal: New Project -->
+    <div id="modal-new-project" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-on-surface/40 backdrop-blur-sm hidden">
+        <div class="bg-white rounded-xl shadow-xl border border-border-subtle w-full max-w-md overflow-hidden transform transition-all">
+            <div class="px-6 py-4 border-b border-border-subtle flex justify-between items-center bg-surface-muted/50">
+                <h3 class="font-headline-sm text-headline-sm text-on-surface">Create New Project</h3>
+                <button type="button" class="text-outline hover:text-on-surface p-1 rounded-full hover:bg-surface-container transition-colors btn-close-modal">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <form id="form-new-project" class="p-6 space-y-4">
+                <div class="space-y-1">
+                    <label class="font-label-md text-label-md text-on-surface-variant" for="p-name">Project Name</label>
+                    <input id="p-name" type="text" required placeholder="Mobile App Redesign" class="w-full bg-surface-base border border-border-subtle rounded-lg px-3 py-2 font-body-md text-body-md"/>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="font-label-md text-label-md text-on-surface-variant" for="p-client">Client Name</label>
+                    <input id="p-client" type="text" required placeholder="Vanguard Retailers" class="w-full bg-surface-base border border-border-subtle rounded-lg px-3 py-2 font-body-md text-body-md"/>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="font-label-md text-label-md text-on-surface-variant" for="p-status">Status</label>
+                        <select id="p-status" class="w-full bg-surface-base border border-border-subtle rounded-lg px-3 py-2 font-body-md text-body-md">
+                            <option value="active">Active</option>
+                            <option value="at_risk">At Risk</option>
+                            <option value="completed">Completed</option>
+                            <option value="on_hold">On Hold</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="font-label-md text-label-md text-on-surface-variant" for="p-priority">Priority</label>
+                        <select id="p-priority" class="w-full bg-surface-base border border-border-subtle rounded-lg px-3 py-2 font-body-md text-body-md">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="font-label-md text-label-md text-on-surface-variant" for="p-notes">Project Scope Summary</label>
+                    <textarea id="p-notes" placeholder="Briefly describe the primary deliverables..." rows="3" class="w-full bg-surface-base border border-border-subtle rounded-lg px-3 py-2 font-body-md text-body-md"></textarea>
+                </div>
+
+                <div class="pt-4 border-t border-border-subtle flex justify-end gap-3">
+                    <button type="button" class="px-4 py-2 border border-border-subtle rounded-lg text-on-surface-variant font-label-md hover:bg-surface-container-low transition-all btn-close-modal">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-6 py-2 bg-primary text-white font-label-md font-bold rounded-lg shadow-md hover:opacity-90 active:scale-95 transition-all">
+                        Create Project
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Add Team Member -->
+    <div id="modal-add-member" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-on-surface/40 backdrop-blur-sm hidden">
+        <div class="bg-white rounded-xl shadow-xl border border-border-subtle w-full max-w-md overflow-hidden transform transition-all">
+            <div class="px-6 py-4 border-b border-border-subtle flex justify-between items-center bg-surface-muted/50">
+                <h3 class="font-headline-sm text-headline-sm text-on-surface">Add Team Member</h3>
+                <button type="button" class="text-outline hover:text-on-surface p-1 rounded-full hover:bg-surface-container transition-colors btn-close-modal">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <form id="form-add-member" class="p-6 space-y-4">
+                <div class="space-y-1">
+                    <label class="font-label-md text-label-md text-on-surface-variant" for="m-name">Full Name</label>
+                    <input id="m-name" type="text" required placeholder="Sarah Jenkins" class="w-full bg-surface-base border border-border-subtle rounded-lg px-3 py-2 font-body-md text-body-md"/>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="font-label-md text-label-md text-on-surface-variant" for="m-role">Role</label>
+                    <input id="m-role" type="text" required placeholder="Lead DevOps Engineer" class="w-full bg-surface-base border border-border-subtle rounded-lg px-3 py-2 font-body-md text-body-md"/>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="font-label-md text-label-md text-on-surface-variant" for="m-project">Project Assignment</label>
+                    <select id="m-project" class="w-full bg-surface-base border border-border-subtle rounded-lg px-3 py-2 font-body-md text-body-md">
+                        <!-- Populated by JavaScript -->
+                    </select>
+                </div>
+
+                <div class="pt-4 border-t border-border-subtle flex justify-end gap-3">
+                    <button type="button" class="px-4 py-2 border border-border-subtle rounded-lg text-on-surface-variant font-label-md hover:bg-surface-container-low transition-all btn-close-modal">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-6 py-2 bg-primary text-white font-label-md font-bold rounded-lg shadow-md hover:opacity-90 active:scale-95 transition-all">
+                        Add Member
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Project Details Drawer/View -->
+    <div id="modal-project-details" class="fixed inset-0 z-50 flex items-center justify-end bg-on-surface/40 backdrop-blur-sm hidden">
+        <div class="bg-white h-full w-full max-w-md shadow-2xl border-l border-border-subtle flex flex-col transform transition-transform duration-350 translate-x-full" id="details-drawer-panel">
+            <div class="px-6 py-5 border-b border-border-subtle flex justify-between items-center bg-surface-muted/50 shrink-0">
+                <div>
+                    <span id="detail-project-client" class="text-label-sm font-label-sm text-primary uppercase font-bold">Client Name</span>
+                    <h3 id="detail-project-name" class="font-headline-sm text-headline-sm text-on-surface mt-1">Project Name</h3>
+                </div>
+                <button type="button" class="text-outline hover:text-on-surface p-1.5 rounded-full hover:bg-surface-container transition-colors btn-close-modal">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <div class="flex-1 p-6 overflow-y-auto space-y-6 custom-scrollbar">
+                <!-- Status & Priority -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-surface-container-low p-3.5 rounded-xl border border-border-subtle">
+                        <span class="text-[11px] font-bold text-outline uppercase tracking-wider block mb-1">Status</span>
+                        <span id="detail-project-status" class="inline-flex px-2 py-0.5 rounded text-label-md font-label-md uppercase font-semibold">Active</span>
+                    </div>
+                    <div class="bg-surface-container-low p-3.5 rounded-xl border border-border-subtle">
+                        <span class="text-[11px] font-bold text-outline uppercase tracking-wider block mb-1">Priority</span>
+                        <span id="detail-project-priority" class="text-body-md font-medium text-on-surface capitalize font-semibold">Medium</span>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div>
+                    <div class="flex justify-between text-label-sm font-label-sm mb-1.5">
+                        <span class="text-on-surface-variant">Completion Progress</span>
+                        <span id="detail-project-progress-text" class="text-on-surface font-bold">45%</span>
+                    </div>
+                    <div class="w-full h-2.5 bg-surface-container rounded-full overflow-hidden">
+                        <div id="detail-project-progress-bar" class="h-full rounded-full bg-primary" style="width: 45%;"></div>
+                    </div>
+                </div>
+
+                <!-- Scope summary -->
+                <div>
+                    <h4 class="text-label-md font-label-md text-on-surface-variant font-bold mb-1.5">Internal Scope Summary</h4>
+                    <p id="detail-project-notes" class="text-body-md text-on-surface leading-relaxed bg-surface-muted p-4 rounded-xl border border-border-subtle/80">Project Scope Notes</p>
+                </div>
+
+                <!-- Team Assigned -->
+                <div>
+                    <h4 class="text-label-md font-label-md text-on-surface-variant font-bold mb-3">Project Team Members</h4>
+                    <div id="detail-project-team-list" class="space-y-2.5">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer actions -->
+            <div class="p-6 border-t border-border-subtle bg-slate-50 flex gap-3 shrink-0">
+                <button type="button" class="flex-1 py-2 border border-border-subtle rounded-lg text-on-surface-variant font-label-md hover:bg-surface-container-low transition-all" onclick="showToast('Navigating to full setup editor...', 'success'); showModal('modal-project-details', false);">
+                    Full Timeline View
+                </button>
+                <button type="button" class="flex-1 py-2 bg-primary text-white font-label-md font-bold rounded-lg hover:opacity-95 active:scale-95 transition-all text-center" onclick="showToast('Status report generated!', 'success')">
+                    Email Client Recap
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Interactive JavaScript -->
+    <script>
+        // --- 1. MOCK STATE & DATA ---
+        let projects = [
+            {
+                id: 'p1',
+                client: 'Acme Corp',
+                name: 'Cloud Infrastructure Migration',
+                status: 'active',
+                priority: 'medium',
+                progress: 68,
+                notes: 'Primary target is to migrate the core legacy infrastructure to AWS VPC with zero downtime. Focus on cloud security policies.',
+                team: [
+                    { name: 'Elena Rodriguez', role: 'Lead Architect' },
+                    { name: 'Marcus Jones', role: 'Project Manager' }
+                ]
+            },
+            {
+                id: 'p2',
+                client: 'TechStart Inc',
+                name: 'Data Analytics Platform',
+                status: 'completed',
+                priority: 'high',
+                progress: 100,
+                notes: 'Building a real-time ingestion pipeline. Team completed AWS Kinesis and Snowflake staging setup.',
+                team: [
+                    { name: 'Sarah Chen', role: 'Data Engineer' }
+                ]
+            },
+            {
+                id: 'p3',
+                client: 'Global Manufacturing',
+                name: 'ERP Implementation',
+                status: 'completed',
+                priority: 'low',
+                progress: 100,
+                notes: 'SAP migration completed. Legacy system database archiving and user transition testing concluded.',
+                team: [
+                    { name: 'Elena Rodriguez', role: 'ERP Consultant' }
+                ]
+            },
+            {
+                id: 'p4',
+                client: 'FinServe Ltd',
+                name: 'API Gateway Redesign',
+                status: 'active',
+                priority: 'medium',
+                progress: 35,
+                notes: 'Updating authentication protocols. Integrating secure OAuth2 flows and request throttling.',
+                team: [
+                    { name: 'David Kim', role: 'API Developer' }
+                ]
+            },
+            {
+                id: 'p5',
+                client: 'RetailMax',
+                name: 'Mobile App Development',
+                status: 'on_hold',
+                priority: 'low',
+                progress: 15,
+                notes: 'Project paused due to resource redirection toward ecommerce website stability.',
+                team: []
+            }
+        ];
+
+        let teamMembers = [
+            { name: 'Elena Rodriguez', role: 'Lead Architect', projectId: 'p1' },
+            { name: 'Marcus Jones', role: 'Project Manager', projectId: 'p1' },
+            { name: 'Sarah Chen', role: 'DevOps Specialist', projectId: 'p2' },
+            { name: 'David Kim', role: 'UX/UI Lead', projectId: 'p4' },
+            { name: 'Alex Rivera', role: 'Backend Developer', projectId: 'p1' },
+            { name: 'Jessica Wang', role: 'QA Engineer', projectId: 'p3' }
+        ];
+
+        // --- 2. INITIALIZATION ---
+        window.addEventListener('DOMContentLoaded', () => {
+            renderProjectsList();
+            updateStatsAndSelectors();
+            setupEventListeners();
+        });
+
+        // --- 3. EVENT LISTENERS SETUP ---
+        function setupEventListeners() {
+            // Sidebar screen navigation clicks
+            document.querySelectorAll('#sidebar-nav .nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetView = link.getAttribute('data-view');
+                    navigateTo(targetView);
+                    
+                    // Update active styling
+                    document.querySelectorAll('#sidebar-nav .nav-link').forEach(nav => {
+                        nav.className = "nav-link flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low transition-all rounded-lg font-label-md text-label-md";
+                    });
+                    link.className = "nav-link flex items-center gap-3 px-3 py-2 bg-primary-container text-on-primary-container rounded-lg font-semibold font-label-md text-label-md";
+                });
+            });
+
+            // Quick Actions: Open New Project Modal
+            document.getElementById('btn-new-project-sidebar').addEventListener('click', () => showModal('modal-new-project', true));
+            document.getElementById('btn-new-project-card').addEventListener('click', () => showModal('modal-new-project', true));
+
+            // Quick Actions: Open Add Team Member Modal
+            document.getElementById('btn-add-member').addEventListener('click', () => {
+                populateProjectSelect();
+                showModal('modal-add-member', true);
+            });
+
+            // Quick Actions: Generate Report (Simulated loading)
+            document.getElementById('btn-generate-report').addEventListener('click', triggerGenerateReport);
+
+            // Close modals buttons
+            document.querySelectorAll('.btn-close-modal').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const modal = e.target.closest('[id^="modal-"]');
+                    showModal(modal.id, false);
+                });
+            });
+
+            // Form Submit: New Project
+            document.getElementById('form-new-project').addEventListener('submit', handleNewProjectSubmit);
+
+            // Form Submit: Add Team Member
+            document.getElementById('form-add-member').addEventListener('submit', handleAddMemberSubmit);
+        }
+
+        // --- 4. NAVIGATION STATE CONTROL ---
+        function navigateTo(viewId) {
+            // Hide all views
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-placeholder').classList.add('hidden');
+
+            if (viewId === 'dashboard') {
+                document.getElementById('view-dashboard').classList.remove('hidden');
+                document.getElementById('subnav-projects').textContent = "Projects";
+                showToast("Navigated to Dashboard", "success");
+            } else {
+                // SPA Mock Navigation
+                const placeholder = document.getElementById('view-placeholder');
+                placeholder.classList.remove('hidden');
+
+                const title = document.getElementById('placeholder-title');
+                const desc = document.getElementById('placeholder-desc');
+                const icon = document.getElementById('placeholder-icon');
+
+                // Map UI details for simulated routes
+                const viewMeta = {
+                    'project-creation': { title: 'Project Creation Form', desc: 'Initialize core parameters and kickoff packages for consultancy engagements.', icon: 'add_box' },
+                    'credentials': { title: 'Credentials & Integrations', desc: 'Configure cloud VPC accounts, Slack URLs, Jira webhook connections, and Confluence secrets.', icon: 'vpn_key' },
+                    'communication': { title: 'Communication Protocols', desc: 'Establish escalation rules, sync calendars, slack notification thresholds, and client sync periods.', icon: 'forum' },
+                    'timeline': { title: 'Execution Timeline Schedule', desc: 'Manage phases, calendar schedules, track delivery delays, and view critical path blockers.', icon: 'schedule' },
+                    'team-intro': { title: 'Team Structure Intro', desc: 'Review consultant profiles, departmental availability metrics, and individual skill arrays.', icon: 'groups' },
+                    'milestones': { title: 'Milestone Delivery Checklists', desc: 'Toggle delivery tasks checklist items, file attachments, and client sign-off records.', icon: 'checklist' },
+                    'preview': { title: 'Summary Deck Preview', desc: 'Auto-compiled briefing report containing all strategic timelines and governance levels.', icon: 'visibility' },
+                    'management': { title: 'Consultancy Portfolio Management', desc: 'Modify overall contract structures, PMO review pipelines, and financial status details.', icon: 'inventory_2' }
+                };
+
+                const meta = viewMeta[viewId] || { title: 'Under Construction', desc: 'This section is being wired.', icon: 'construction' };
+                title.textContent = meta.title;
+                desc.textContent = meta.desc;
+                icon.textContent = meta.icon;
+                
+                document.getElementById('subnav-projects').textContent = meta.title;
+                showToast(`Navigated to ${meta.title}`, "success");
+            }
+        }
+
+        // --- 5. RENDER FUNCTIONS ---
+        function renderProjectsList() {
+            const container = document.getElementById('recent-projects-list');
+            container.innerHTML = '';
+
+            projects.forEach(project => {
+                const card = document.createElement('div');
+                card.className = "p-margin-md hover:bg-surface-container-low transition-all cursor-pointer relative project-card-row";
+                card.setAttribute('data-id', project.id);
+                
+                // Colors based on status
+                let badgeClass = "bg-status-success/10 text-status-success";
+                let statusLabel = "On Track";
+                if (project.status === 'completed') {
+                    badgeClass = "bg-status-success/10 text-status-success";
+                    statusLabel = "Completed";
+                } else if (project.status === 'at_risk') {
+                    badgeClass = "bg-status-warning/10 text-status-warning font-bold";
+                    statusLabel = "At Risk";
+                } else if (project.status === 'on_hold') {
+                    badgeClass = "bg-outline-variant/10 text-outline";
+                    statusLabel = "On Hold";
+                }
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h4 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+                                ${project.name}
+                                ${project.id === 'p1' ? '<span class="bg-primary text-white text-[10px] font-bold px-1.5 py-0.5 rounded">Active</span>' : ''}
+                            </h4>
+                            <p class="text-label-md text-on-surface-variant">${project.client}</p>
+                        </div>
+                        <span class="text-label-sm font-label-sm px-2 py-0.5 rounded ${badgeClass}">${statusLabel}</span>
+                    </div>
+                    <div class="mt-3">
+                        <div class="flex justify-between text-label-sm font-label-sm mb-1">
+                            <span class="text-on-surface-variant">Progress</span>
+                            <span class="text-on-surface font-semibold">${project.progress}%</span>
+                        </div>
+                        <div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+                            <div class="h-full rounded-full ${project.status === 'at_risk' ? 'bg-status-warning' : 'bg-primary'}" style="width: ${project.progress}%"></div>
+                        </div>
+                    </div>
+                `;
+
+                // Card Click: Open Details Drawer
+                card.addEventListener('click', () => {
+                    openProjectDetails(project.id);
+                });
+
+                container.appendChild(card);
+            });
+        }
+
+        // --- 6. DETAILS DRAWER INTERACTIVE FUNCTION ---
+        function openProjectDetails(id) {
+            const project = projects.find(p => p.id === id);
+            if (!project) return;
+
+            // Log details to console as requested in rule 3
+            console.log(`[Project Detail Access] ID: ${project.id} | Client: ${project.client} | Name: ${project.name} | Progress: ${project.progress}%`);
+
+            // Populate drawer template values
+            document.getElementById('detail-project-name').textContent = project.name;
+            document.getElementById('detail-project-client').textContent = project.client;
+            
+            const notesEl = document.getElementById('detail-project-notes');
+            notesEl.textContent = project.notes || 'No internal kickoff notes configured yet.';
+
+            const statusEl = document.getElementById('detail-project-status');
+            statusEl.textContent = project.status;
+            
+            // Render correct badge colors in details popout
+            statusEl.className = "inline-flex px-2 py-0.5 rounded text-label-md font-label-md uppercase font-semibold";
+            if (project.status === 'completed') {
+                statusEl.classList.add('bg-status-success/15', 'text-status-success');
+            } else if (project.status === 'at_risk') {
+                statusEl.classList.add('bg-status-warning/15', 'text-status-warning');
+            } else if (project.status === 'on_hold') {
+                statusEl.classList.add('bg-outline-variant/15', 'text-outline');
+            } else {
+                statusEl.classList.add('bg-primary/10', 'text-primary');
+            }
+
+            document.getElementById('detail-project-priority').textContent = project.priority;
+            document.getElementById('detail-project-progress-text').textContent = `${project.progress}%`;
+            document.getElementById('detail-project-progress-bar').style.width = `${project.progress}%`;
+
+            // Populate team list
+            const teamContainer = document.getElementById('detail-project-team-list');
+            teamContainer.innerHTML = '';
+            
+            // Filter global members assigned to this project
+            const assignedMembers = teamMembers.filter(m => m.projectId === project.id);
+            if (assignedMembers.length > 0) {
+                assignedMembers.forEach(member => {
+                    const row = document.createElement('div');
+                    row.className = "flex items-center justify-between p-2.5 bg-surface-muted rounded-lg border border-border-subtle/50";
+                    row.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-outline">account_circle</span>
+                            <div>
+                                <div class="text-body-md font-semibold text-on-surface">${member.name}</div>
+                                <div class="text-[11px] text-outline">${member.role}</div>
+                            </div>
+                        </div>
+                    `;
+                    teamContainer.appendChild(row);
+                });
+            } else {
+                teamContainer.innerHTML = `<p class="text-body-md text-outline italic text-center py-2">No team members assigned.</p>`;
+            }
+
+            // Open Drawer Modal panel
+            showModal('modal-project-details', true);
+        }
+
+        // --- 7. CORE MODAL ACTIONS ---
+        function showModal(modalId, isVisible) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+
+            if (isVisible) {
+                modal.classList.remove('hidden');
+                
+                // Specific drawer sliding transition logic
+                if (modalId === 'modal-project-details') {
+                    modal.classList.add('flex');
+                    setTimeout(() => {
+                        document.getElementById('details-drawer-panel').classList.remove('translate-x-full');
+                    }, 50);
+                }
+            } else {
+                if (modalId === 'modal-project-details') {
+                    document.getElementById('details-drawer-panel').classList.add('translate-x-full');
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                        modal.classList.remove('flex');
+                    }, 300);
+                } else {
+                    modal.classList.add('hidden');
+                }
+            }
+        }
+
+        // --- 8. STATE UPDATERS ---
+        function updateStatsAndSelectors() {
+            // Stat count
+            document.getElementById('stat-active-projects').textContent = projects.filter(p => p.status === 'active' || p.status === 'at_risk').length;
+            document.getElementById('stat-team-members').textContent = teamMembers.length;
+        }
+
+        function populateProjectSelect() {
+            const select = document.getElementById('m-project');
+            select.innerHTML = '';
+            projects.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.textContent = p.name;
+                select.appendChild(opt);
+            });
+        }
+
+        // --- 9. FORM HANDLERS ---
+        function handleNewProjectSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('p-name').value;
+            const client = document.getElementById('p-client').value;
+            const status = document.getElementById('p-status').value;
+            const priority = document.getElementById('p-priority').value;
+            const notes = document.getElementById('p-notes').value;
+
+            const newProject = {
+                id: 'p' + (projects.length + 1),
+                name: name,
+                client: client,
+                status: status,
+                priority: priority,
+                progress: status === 'completed' ? 100 : 0,
+                notes: notes,
+                team: []
+            };
+
+            projects.unshift(newProject);
+            
+            // Update UI
+            renderProjectsList();
+            updateStatsAndSelectors();
+            showModal('modal-new-project', false);
+            
+            // Reset form
+            document.getElementById('form-new-project').reset();
+            
+            showToast(`Project "${name}" added successfully!`, "success");
+        }
+
+        function handleAddMemberSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('m-name').value;
+            const role = document.getElementById('m-role').value;
+            const projectId = document.getElementById('m-project').value;
+
+            const selectedProject = projects.find(p => p.id === projectId);
+            if (!selectedProject) return;
+
+            const newMember = {
+                name: name,
+                role: role,
+                projectId: projectId
+            };
+
+            teamMembers.push(newMember);
+
+            // Update UI stats
+            updateStatsAndSelectors();
+            showModal('modal-add-member', false);
+
+            // Reset form
+            document.getElementById('form-add-member').reset();
+
+            showToast(`Added ${name} to project "${selectedProject.name}"`, "success");
+        }
+
+        // --- 10. GENERATE REPORT SIMULATION ---
+        function triggerGenerateReport() {
+            const icon = document.getElementById('report-icon');
+            const text = document.getElementById('report-text');
+            const button = document.getElementById('btn-generate-report');
+
+            // Set loading state
+            button.disabled = true;
+            icon.textContent = "progress_activity";
+            icon.classList.add("animate-spin");
+            text.textContent = "Simulating Analysis...";
+
+            setTimeout(() => {
+                // Restore state
+                icon.textContent = "description";
+                icon.classList.remove("animate-spin");
+                text.textContent = "Generate Report";
+                button.disabled = false;
+
+                // Download simulation trigger
+                triggerCSVDownload();
+                showToast("Summary report compiled and downloaded!", "success");
+            }, 1800);
+        }
+
+        function triggerCSVDownload() {
+            // Build CSV Content from projects array
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Project ID,Client Name,Project Name,Priority,Status,Progress %\r\n";
+            
+            projects.forEach(p => {
+                csvContent += `"${p.id}","${p.client}","${p.name}","${p.priority}","${p.status}",${p.progress}\r\n`;
+            });
+
+            // Create temporary anchor tag to download
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "KickoffGen_Projects_Report.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // --- 11. TOAST SYSTEM UTILS ---
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const id = Math.random().toString(36).substring(2, 9);
+
+            const toast = document.createElement('div');
+            toast.id = `toast-${id}`;
+            toast.className = `flex items-center gap-3 p-4 bg-white rounded-xl border shadow-lg transition-all transform duration-300 animate-bounce`;
+            
+            if (type === 'success') {
+                toast.classList.add('border-status-success/20');
+            } else {
+                toast.classList.add('border-status-error/20');
+            }
+
+            toast.innerHTML = `
+                <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${type === 'success' ? 'bg-status-success/10 text-status-success' : 'bg-status-error/10 text-status-error'}">
+                    <span class="material-symbols-outlined text-[20px]">${type === 'success' ? 'check_circle' : 'error'}</span>
+                </div>
+                <div class="flex-1 font-body-md text-body-md text-on-surface-variant">${message}</div>
+                <button type="button" class="text-outline hover:text-on-surface p-1 rounded-full transition-colors" onclick="this.closest('#toast-${id}').remove()">
+                    <span class="material-symbols-outlined text-[16px]">close</span>
+                </button>
+            `;
+
+            container.appendChild(toast);
+
+            // Auto dismiss toast after 3.5 seconds
+            setTimeout(() => {
+                const el = document.getElementById(`toast-${id}`);
+                if (el) el.remove();
+            }, 3500);
+        }
+    </script>
+</body>
+</html>

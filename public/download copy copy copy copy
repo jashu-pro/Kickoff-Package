@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Project Timeline | KickoffGen</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary": "#004ac6",
+                      "inverse-primary": "#b4c5ff",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "surface-container-high": "#dce9ff",
+                      "status-warning": "#f59e0b",
+                      "secondary": "#0058be",
+                      "on-surface": "#0b1c30",
+                      "on-secondary": "#ffffff",
+                      "surface": "#f8f9ff",
+                      "on-tertiary-fixed-variant": "#7d2d00",
+                      "surface-dim": "#cbdbf5",
+                      "surface-muted": "#f8fafc",
+                      "outline-variant": "#c3c6d7",
+                      "accent-vivid": "#6161ff",
+                      "inverse-surface": "#213145",
+                      "surface-container-low": "#eff4ff",
+                      "status-error": "#ef4444",
+                      "on-error-container": "#93000a",
+                      "primary-fixed": "#dbe1ff",
+                      "surface-variant": "#d3e4fe",
+                      "surface-tint": "#0053db",
+                      "border-subtle": "#e2e8f0",
+                      "inverse-on-surface": "#eaf1ff",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "surface-container-highest": "#d3e4fe",
+                      "surface-container": "#e5eeff",
+                      "on-error": "#ffffff",
+                      "tertiary-container": "#bc4800",
+                      "secondary-container": "#2170e4",
+                      "surface-base": "#ffffff",
+                      "on-primary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "status-success": "#10b981",
+                      "on-background": "#0b1c30",
+                      "on-secondary-fixed-variant": "#004395",
+                      "error": "#ba1a1a",
+                      "error-container": "#ffdad6",
+                      "on-primary-container": "#eeefff",
+                      "surface-bright": "#f8f9ff",
+                      "tertiary": "#943700",
+                      "on-tertiary-container": "#ffede6",
+                      "primary-container": "#2563eb",
+                      "on-surface-variant": "#434655",
+                      "secondary-fixed": "#d8e2ff",
+                      "background": "#f8f9ff",
+                      "outline": "#737686",
+                      "on-primary-fixed": "#00174b",
+                      "on-secondary-fixed": "#001a42",
+                      "tertiary-fixed-dim": "#ffb596",
+                      "on-secondary-container": "#fefcff",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-fixed": "#ffdbcd",
+                      "on-primary-fixed-variant": "#003ea8",
+                      "on-tertiary-fixed": "#360f00"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "container-padding-desktop": "32px",
+                      "margin-md": "24px",
+                      "gutter": "24px",
+                      "margin-sm": "12px",
+                      "base": "8px",
+                      "container-padding-mobile": "16px"
+              },
+              "fontFamily": {
+                      "body-md": ["Inter"],
+                      "headline-md-mobile": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "label-md": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "label-sm": ["Inter"]
+              },
+              "fontSize": {
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-md-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "headline-sm": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .timeline-line {
+            background: repeating-linear-gradient(to bottom, #e2e8f0 0, #e2e8f0 4px, transparent 4px, transparent 8px);
+        }
+        .scroll-hide::-webkit-scrollbar { display: none; }
+        .scroll-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-60 bg-surface-container-lowest border-r border-border-subtle flex flex-col p-margin-sm gap-2 z-50 hidden md:flex">
+<div class="flex items-center gap-3 px-3 py-4 mb-4">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined">rocket_launch</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm text-on-surface font-extrabold leading-tight">KickoffGen</h1>
+<p class="text-label-md font-label-md text-on-surface-variant">IT Consultancy Suite</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">dashboard</span> Dashboard
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">add_box</span> Project Creation
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">vpn_key</span> Credentials
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">forum</span> Communication
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary-container text-on-primary-container rounded-lg font-semibold font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">schedule</span> Timeline
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">groups</span> Team Intro
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">checklist</span> Milestones
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">visibility</span> Preview
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">inventory_2</span> Management
+            </a>
+</nav>
+<div class="mt-auto border-t border-border-subtle pt-4 space-y-1">
+<button class="w-full bg-primary text-white py-2.5 rounded-lg font-label-md text-label-md mb-4 shadow-sm active:scale-95 duration-100">
+                New Package
+            </button>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">help</span> Help Center
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">logout</span> Logout
+            </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-60 min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="h-16 bg-surface flex justify-between items-center px-container-padding-desktop border-b border-border-subtle shadow-sm sticky top-0 z-40">
+<div class="flex items-center gap-6">
+<div class="relative group hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="pl-10 pr-4 py-1.5 bg-surface-container-low border-none rounded-full text-body-md font-body-md w-64 focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search milestones..." type="text"/>
+</div>
+<nav class="hidden md:flex gap-6">
+<a class="text-on-surface-variant hover:text-primary font-body-md text-body-md transition-colors" href="#">Dashboard</a>
+<a class="text-primary font-bold border-b-2 border-primary font-body-md text-body-md" href="#">Projects</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-muted rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-status-error rounded-full border-2 border-surface"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-muted rounded-full transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-border-subtle bg-surface-container">
+<img alt="User profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABuTIdAV-qdp4xL3ZczI1vQlKQPhEu5DAcLdVTfqfFfWsD44lDbOZnNqD2oScpmIsosf57erSK2WhQa8aeDqcilnqnyAQSm4To51y_R4Bef3AxotXlh8K-ljY8Vz7j3BjwFr_iKnQgONJIg0NPa2WO6ZQ6SbxIXj4B7CTtA4z8YzM9iODjEny7V3MsgMnGb7b1fV0falAkU9_9J29mnG1xenfwrqX3HVwBa2KHVwN6xUqRkRmLApFS3Enl3qrwtu-o6XwWaO89kuw"/>
+</div>
+</div>
+</header>
+<!-- Timeline Hero -->
+<div class="p-container-padding-desktop bg-surface-bright border-b border-border-subtle">
+<div class="max-w-6xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="text-primary bg-surface-container-high px-2 py-0.5 rounded text-label-sm font-label-sm">PROJECT ID: #2024-081</span>
+<h2 class="text-on-surface-variant font-label-md text-label-md">Cloud Migration Phase 2</h2>
+</div>
+<h1 class="font-display-lg text-display-lg text-on-surface">Execution Timeline</h1>
+</div>
+<div class="flex gap-4">
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-border-subtle shadow-sm flex items-center gap-4 min-w-[160px]">
+<div class="w-10 h-10 rounded-full bg-status-success/10 text-status-success flex items-center justify-center">
+<span class="material-symbols-outlined">event_available</span>
+</div>
+<div>
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-wider">Start Date</p>
+<p class="font-headline-sm text-headline-sm">Jan 12, 2024</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-border-subtle shadow-sm flex items-center gap-4 min-w-[160px]">
+<div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined">event_upcoming</span>
+</div>
+<div>
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-wider">Target End</p>
+<p class="font-headline-sm text-headline-sm">Aug 15, 2024</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive Timeline Section -->
+<div class="flex-1 overflow-x-auto p-container-padding-desktop bg-background scroll-hide">
+<div class="max-w-6xl mx-auto relative py-12">
+<!-- Vertical Progress Line -->
+<div class="absolute left-[31px] md:left-1/2 top-0 bottom-0 w-0.5 timeline-line -translate-x-1/2 z-0 opacity-50"></div>
+<!-- Milestone Container -->
+<div class="space-y-16 relative z-10">
+<!-- Milestone 1: Kickoff -->
+<div class="flex flex-col md:flex-row items-center md:justify-center group">
+<div class="hidden md:block w-1/2 pr-12 text-right">
+<span class="inline-flex px-2 py-1 rounded bg-status-success/10 text-status-success text-label-sm font-label-sm mb-2">COMPLETED</span>
+<h3 class="font-headline-sm text-headline-sm mb-1">Project Kickoff &amp; Requirements</h3>
+<p class="text-body-md font-body-md text-on-surface-variant">Initial stakeholder alignment and technical scope definition completed.</p>
+</div>
+<div class="relative flex flex-col items-center">
+<div class="w-16 h-16 rounded-full bg-surface-base border-4 border-status-success shadow-lg flex items-center justify-center text-status-success group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<span class="mt-4 font-label-md text-label-md bg-surface-container-highest px-3 py-1 rounded-full whitespace-nowrap">Jan 12 — Jan 28</span>
+</div>
+<div class="md:w-1/2 md:pl-12 mt-4 md:mt-0">
+<div class="md:hidden">
+<span class="inline-flex px-2 py-1 rounded bg-status-success/10 text-status-success text-label-sm font-label-sm mb-2">COMPLETED</span>
+<h3 class="font-headline-sm text-headline-sm mb-1">Project Kickoff &amp; Requirements</h3>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-border-subtle shadow-sm group-hover:shadow-md transition-shadow">
+<div class="flex justify-between items-center mb-3">
+<span class="text-label-sm font-label-sm text-outline">PROGRESS</span>
+<span class="text-label-sm font-label-sm text-status-success">100%</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-status-success h-full w-full"></div>
+</div>
+<div class="mt-4 flex -space-x-2">
+<img alt="Team member" class="w-7 h-7 rounded-full border-2 border-surface-container-lowest" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCi_4nfjFnwD8mnGtYn8CuhslJBGUe4Xese9p_bb79vhympy2rZLfK7sKKl9rYIMk6e3Im3W0hHy25MLPka3ho16kRSqw81ldCVm0KU0GYoRcVH5Pp4HA_Pvup8byfeksUn7AAPZH765oh56QxURhxLmDiixyrn4f4HX2fsyzENEA53KfTWlGDD90cx1VJicBEeD6GJ65bi4swEXUTG3EopGNhaej5AErXyyrAxzasOuGODr4pnJgYnVdZXUtFkMypptOq63c411es"/>
+<img alt="Team member" class="w-7 h-7 rounded-full border-2 border-surface-container-lowest" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7ZGHFikpbi-CUjEVDcKqcObxI2BUxxDmOHNmIEkPIP0Bt1pAbDrIYCO6P2icifM5aSe1H9QH-na20uZEIybOZ_iSWlzYaLgQrfXwAx0du8nUtR2a-vxv_Sc5knBWrzpoS7YHt5fEQkUH1B9BGGmRtQqGUEUXM5jfQ7HKujnZmRTFjQN_SX5Wf41gn-i2RI48QDN96AiGBr-MLlic1K2SyRrdiEUu-wSFaAd2DDAEee5P16NvJXO4tDCRtkNn7f2uOELalU7HbDZI"/>
+<div class="w-7 h-7 rounded-full bg-surface-container text-label-sm flex items-center justify-center border-2 border-surface-container-lowest text-outline">+3</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Milestone 2: Infrastructure (Delayed) -->
+<div class="flex flex-col md:flex-row-reverse items-center md:justify-center group">
+<div class="hidden md:block w-1/2 pl-12 text-left">
+<span class="inline-flex px-2 py-1 rounded bg-status-error/10 text-status-error text-label-sm font-label-sm mb-2 uppercase">Delayed</span>
+<h3 class="font-headline-sm text-headline-sm mb-1">Infrastructure Provisioning</h3>
+<p class="text-body-md font-body-md text-on-surface-variant">Cloud VPC setup and network security group configurations. Waiting for provider verification.</p>
+</div>
+<div class="relative flex flex-col items-center">
+<div class="w-16 h-16 rounded-full bg-surface-base border-4 border-status-error shadow-lg flex items-center justify-center text-status-error group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined">warning</span>
+</div>
+<span class="mt-4 font-label-md text-label-md bg-surface-container-highest px-3 py-1 rounded-full whitespace-nowrap">Feb 01 — Feb 15</span>
+</div>
+<div class="md:w-1/2 md:pr-12 mt-4 md:mt-0 w-full">
+<div class="md:hidden px-4">
+<span class="inline-flex px-2 py-1 rounded bg-status-error/10 text-status-error text-label-sm font-label-sm mb-2">DELAYED</span>
+<h3 class="font-headline-sm text-headline-sm mb-1">Infrastructure Provisioning</h3>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-border-subtle shadow-sm group-hover:shadow-md transition-shadow">
+<div class="flex justify-between items-center mb-3">
+<span class="text-label-sm font-label-sm text-outline">PROGRESS</span>
+<span class="text-label-sm font-label-sm text-status-error">45%</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-status-error h-full w-[45%]"></div>
+</div>
+<div class="mt-4 flex justify-between items-center">
+<div class="flex -space-x-2">
+<img alt="Team member" class="w-7 h-7 rounded-full border-2 border-surface-container-lowest" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2cyVi2f8g2p7Spsw-7H0Ach-tXx_Gk4nPWscL104HhyQ6v8Gr0aP8GQbTTHSPefI53E7wDajX3sYDZFBogRi4oIr_fwLf4U_n1z1O4WaBe_oHaavC7xB2jfyBx89ePwt39Vx9_RvEc9IMEYcNcJ4IxJIv6KR7-rZOSglN7HQcMxrAx_n4CVJRnijuIGFQ3t6CrOIP-09nSo6OaVj-ptmFaRaRq5FE1xo2pqKs2dVCC36WmeR2UVJ7b8klkmakX8lliFbOwmYILW0"/>
+</div>
+<button class="text-primary font-label-sm text-label-sm hover:underline">View Blockers</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Milestone 3: Current Phase -->
+<div class="flex flex-col md:flex-row items-center md:justify-center group">
+<div class="hidden md:block w-1/2 pr-12 text-right">
+<span class="inline-flex px-2 py-1 rounded bg-primary/10 text-primary text-label-sm font-label-sm mb-2 uppercase">On Track</span>
+<h3 class="font-headline-sm text-headline-sm mb-1">Data Migration Scripting</h3>
+<p class="text-body-md font-body-md text-on-surface-variant">Developing automated ETL pipelines for legacy database transfer.</p>
+</div>
+<div class="relative flex flex-col items-center">
+<div class="w-16 h-16 rounded-full bg-primary text-white shadow-xl flex items-center justify-center animate-pulse group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined">sync</span>
+</div>
+<span class="mt-4 font-label-md text-label-md bg-primary-container text-on-primary-container px-3 py-1 rounded-full whitespace-nowrap">Mar 10 — Apr 05</span>
+</div>
+<div class="md:w-1/2 md:pl-12 mt-4 md:mt-0 w-full">
+<div class="md:hidden px-4">
+<span class="inline-flex px-2 py-1 rounded bg-primary/10 text-primary text-label-sm font-label-sm mb-2">ON TRACK</span>
+<h3 class="font-headline-sm text-headline-sm mb-1">Data Migration Scripting</h3>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl border-2 border-primary shadow-lg ring-4 ring-primary/5">
+<div class="flex justify-between items-center mb-3">
+<span class="text-label-sm font-label-sm text-outline">PROGRESS</span>
+<span class="text-label-sm font-label-sm text-primary font-bold">12%</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[12%]"></div>
+</div>
+<div class="mt-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-sm">schedule</span>
+<p class="text-label-sm font-label-sm text-on-surface-variant italic">Next standup in 2 hours</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Milestone 4: Future -->
+<div class="flex flex-col md:flex-row-reverse items-center md:justify-center opacity-60 grayscale group hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+<div class="hidden md:block w-1/2 pl-12 text-left">
+<span class="inline-flex px-2 py-1 rounded bg-surface-container-highest text-outline text-label-sm font-label-sm mb-2 uppercase">Scheduled</span>
+<h3 class="font-headline-sm text-headline-sm mb-1">System Integration Testing</h3>
+<p class="text-body-md font-body-md text-on-surface-variant">Comprehensive end-to-end testing with third-party service mocks.</p>
+</div>
+<div class="relative flex flex-col items-center">
+<div class="w-16 h-16 rounded-full bg-surface-container border-2 border-dashed border-outline-variant flex items-center justify-center text-outline">
+<span class="material-symbols-outlined">science</span>
+</div>
+<span class="mt-4 font-label-md text-label-md bg-surface-container-high px-3 py-1 rounded-full whitespace-nowrap">Apr 15 — May 10</span>
+</div>
+<div class="md:w-1/2 md:pr-12 mt-4 md:mt-0 w-full">
+<div class="md:hidden px-4">
+<span class="inline-flex px-2 py-1 rounded bg-surface-container-highest text-outline text-label-sm font-label-sm mb-2 uppercase">Scheduled</span>
+<h3 class="font-headline-sm text-headline-sm mb-1">System Integration Testing</h3>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-border-subtle border-dashed">
+<p class="text-label-md font-label-md text-on-surface-variant text-center">Dependencies: Phase 2, Phase 3</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Final Destination -->
+<div class="mt-16 flex flex-col items-center">
+<div class="w-4 h-4 rounded-full bg-outline-variant ring-8 ring-surface-container-low mb-6"></div>
+<div class="text-center">
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-tighter">PROJECT COMPLETION</p>
+<p class="font-headline-md text-headline-md">August 15, 2024</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer / Action Bar -->
+<div class="p-margin-md border-t border-border-subtle bg-surface-container-lowest flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="w-3 h-3 rounded-full bg-status-success"></span>
+<span class="text-label-sm font-label-sm">1 Completed</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<span class="text-label-sm font-label-sm">1 In Progress</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="w-3 h-3 rounded-full bg-status-error"></span>
+<span class="text-label-sm font-label-sm">1 Warning</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 border border-border-subtle rounded-lg text-primary hover:bg-surface-container-low transition-colors font-label-md text-label-md flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">download</span>
+                    Export PDF
+                </button>
+<button class="px-4 py-2 bg-primary text-white rounded-lg hover:opacity-90 active:scale-95 duration-100 shadow-sm font-label-md text-label-md flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">edit</span>
+                    Modify Schedule
+                </button>
+</div>
+</div>
+</main>
+<!-- Mobile Navigation (Bottom Nav) -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface border-t border-border-subtle flex items-center justify-around z-50">
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">schedule</span>
+<span class="text-[10px] font-label-sm">Timeline</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">forum</span>
+<span class="text-[10px] font-label-sm">Chat</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-label-sm">Profile</span>
+</a>
+</div>
+<script>
+        // Micro-interaction for timeline cards
+        document.querySelectorAll('.group').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                // Potential for adding dynamic glow or hover effects
+            });
+        });
+
+        // Simple smooth scroll to "Current" milestone
+        window.addEventListener('load', () => {
+            const currentTag = document.querySelector('.animate-pulse');
+            if (currentTag) {
+                // Optional: currentTag.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+    </script>
+</body></html>
