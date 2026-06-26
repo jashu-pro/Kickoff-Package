@@ -1,9 +1,9 @@
-
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useProject } from '../../../context/ProjectContext'
 import { useToast } from '../../../components/Toast'
 import { db, generateUUID } from '../../../lib/db'
+import { INTEGRATION_CATEGORIES, INTEGRATIONS_TEMPLATE, generateMockValue } from '../config/integrations.config.js'
 
 export const useProjectForm = () => {
   const navigate = useNavigate()
@@ -15,28 +15,76 @@ export const useProjectForm = () => {
   const [currentStep, setCurrentStep] = useState(1)
   const [hasDraft, setHasDraft] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [isGenerating, setIsGenerating] = useState(false)
   const [success, setSuccess] = useState(false)
   const [dbError, setDbError] = useState(null)
 
   // STEP 1: Project Details State
-  const [priority, setPriority] = useState('medium')
+  const [priority, setPriority] = useState('Medium')
   const [formData, setFormData] = useState({
     clientName: '',
+    clientId: '',
     projectName: '',
+    projectCode: '',
     industry: 'Financial Services',
+    businessUnit: 'Financial Services',
     projectType: 'Cloud Transformation',
     contractValue: '',
+    billingCurrency: 'USD',
+    engagementModel: 'Fixed Price',
+    expectedBudget: '',
+    estimatedTeamSize: '',
+    estimatedDuration: '',
+    projectStatus: 'Draft',
     startDate: '',
     endDate: '',
     projectManager: 'Sarah Jenkins',
-    notes: '',
+    projectSponsorName: '',
+    projectSponsorDesignation: '',
+    clientCity: '',
+    clientCountry: '',
+    deliveryModel: 'Hybrid',
+    businessGoal: '',
+    technicalScope: '',
+    successCriteria: '',
+    dependencies: '',
+    knownConstraints: '',
+    specialInstructions: ''
   })
 
+  // Dynamic calculations for Client ID, Project Code, Duration
+  useEffect(() => {
+    setFormData(prev => {
+      let updates = { ...prev }
+      
+      // Auto-generate Client ID if we have a client name and no ID
+      if (prev.clientName && !prev.clientId.startsWith('CLI-')) {
+        updates.clientId = `CLI-2026-${Math.floor(1000 + Math.random() * 9000)}`
+      }
+      
+      // Auto-generate Project Code
+      if (prev.projectName && !prev.projectCode) {
+        const initials = prev.projectName.split(' ').map(w => w[0]).join('').substring(0, 3).toUpperCase()
+        updates.projectCode = `${initials}-001`
+      }
+
+      // Calculate Duration
+      if (prev.startDate && prev.endDate) {
+        const start = new Date(prev.startDate)
+        const end = new Date(prev.endDate)
+        const diffTime = Math.abs(end - start)
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+        updates.estimatedDuration = `${diffDays} Days`
+      } else {
+        updates.estimatedDuration = ''
+      }
+
+      return updates
+    })
+  }, [formData.clientName, formData.projectName, formData.startDate, formData.endDate])
+
   // STEP 2: Team Members State
-  const [teamMembers, setTeamMembers] = useState([
-    { name: 'James R.', role: 'Senior Consultant', department: 'Delivery', skills: ['Agile', 'Scrum'] },
-    { name: 'Elena M.', role: 'Lead Architect', department: 'Consulting', skills: ['Cloud Architecture', 'AWS'] },
-  ])
+  const [teamMembers, setTeamMembers] = useState([])
   const [showAddMemberInline, setShowAddMemberInline] = useState(false)
   const [inlineName, setInlineName] = useState('')
   const [inlineRole, setInlineRole] = useState('')
@@ -44,15 +92,9 @@ export const useProjectForm = () => {
   const [inlineSkills, setInlineSkills] = useState('')
 
   // STEP 3: Communication State
-  const [channels, setChannels] = useState([
-    { type: 'slack', name: 'Slack Channel', description: 'Primary async communications channel', channel_url: '', is_active: true }
-  ])
-  const [meetings, setMeetings] = useState([
-    { name: 'Weekly Status Sync', frequency: 'Weekly', day_of_week: 'Tuesday', time: '10:00 AM', duration: '30 mins', attendees: 'James R., Elena M., Sarah Jenkins' }
-  ])
-  const [clientContacts, setClientContacts] = useState([
-    { name: 'Alice Smith', role: 'Product Owner', organization: '', email: 'alice@acme.com', phone: '+1 (555) 0123' }
-  ])
+  const [channels, setChannels] = useState([])
+  const [meetings, setMeetings] = useState([])
+  const [clientContacts, setClientContacts] = useState([])
   
   const [showAddContactInline, setShowAddContactInline] = useState(false)
   const [contactName, setContactName] = useState('')
@@ -68,17 +110,11 @@ export const useProjectForm = () => {
   const [meetDuration, setMeetDuration] = useState('30 mins')
 
   // STEP 4: Credentials State
-  const [integrations, setIntegrations] = useState([
-    { service: 'Jira', description: 'Project management and issue tracking', required: true, status: 'pending' },
-    { service: 'Confluence', description: 'Central documentation repository', required: true, status: 'pending' },
-    { service: 'AWS Cloud Account', description: 'Client deployment cloud landing zone', required: false, status: 'pending' },
-    { service: 'GitHub Organization', description: 'Source code repository for client developers', required: true, status: 'pending' }
-  ])
+  const [integrations, setIntegrations] = useState([])
+  const [integrationsEnv, setIntegrationsEnv] = useState('Development')
 
   // STEP 5: Milestones State
-  const [milestones, setMilestones] = useState([
-    { title: 'Project Kickoff & Alignment', description: 'Stakeholder interviews, requirements gathering, and initial baseline definitions.', start_date: '', end_date: '', status: 'scheduled', progress: 0 }
-  ])
+  const [milestones, setMilestones] = useState([])
   const [showAddMilestoneInline, setShowAddMilestoneInline] = useState(false)
   const [msTitle, setMsTitle] = useState('')
   const [msDesc, setMsDesc] = useState('')
@@ -94,14 +130,7 @@ export const useProjectForm = () => {
   })
 
   // STEP 6: Deliverables Checklist Selections
-  const [deliverables, setDeliverables] = useState({
-    kickoffDocument: true,
-    projectCharter: true,
-    teamDirectory: true,
-    communicationMatrix: true,
-    timelinePlan: true,
-    credentialsSheet: true
-  })
+  const [deliverables, setDeliverables] = useState({})
 
   // Recommendation History Ledger State
   const [addedRecommendationsHistory, setAddedRecommendationsHistory] = useState([])
@@ -132,16 +161,35 @@ export const useProjectForm = () => {
 
       await db.projects.save({
         id: localProjectId,
+        client_id: mergedData.clientId,
+        project_code: mergedData.projectCode,
         client_name: mergedData.clientName || 'Draft Client',
         project_name: mergedData.projectName || 'Draft Project',
         industry: mergedData.industry,
+        business_unit: mergedData.businessUnit,
         project_type: mergedData.projectType,
         contract_value: parseFloat(mergedData.contractValue) || 0,
+        billing_currency: mergedData.billingCurrency,
+        engagement_model: mergedData.engagementModel,
+        expected_budget: parseFloat(mergedData.expectedBudget) || 0,
+        estimated_team_size: parseInt(mergedData.estimatedTeamSize) || 0,
+        estimated_duration: mergedData.estimatedDuration,
         start_date: mergedData.startDate || null,
         end_date: mergedData.endDate || null,
+        project_manager: mergedData.projectManager,
+        project_sponsor_name: mergedData.projectSponsorName,
+        project_sponsor_designation: mergedData.projectSponsorDesignation,
+        client_city: mergedData.clientCity,
+        client_country: mergedData.clientCountry,
+        delivery_model: mergedData.deliveryModel,
+        business_goal: mergedData.businessGoal,
+        technical_scope: mergedData.technicalScope,
+        success_criteria: mergedData.successCriteria,
+        dependencies: mergedData.dependencies,
+        known_constraints: mergedData.knownConstraints,
+        special_instructions: mergedData.specialInstructions,
         priority: updatedFields.priority || priority,
-        notes: mergedData.notes,
-        status: 'active'
+        status: mergedData.projectStatus || 'Draft'
       }, !projectSavedInDb)
 
       setProjectSavedInDb(true)
@@ -174,6 +222,54 @@ export const useProjectForm = () => {
     )
   }
 
+  const handleGenerateCredentials = (id) => {
+    // Set to Provisioning first
+    setIntegrations(prev => prev.map(inte => inte.id === id ? { ...inte, status: 'Provisioning' } : inte))
+    
+    // Simulate API delay
+    setTimeout(() => {
+      setIntegrations(prev => 
+        prev.map(inte => {
+          if (inte.id === id) {
+            const now = new Date()
+            const updatedFields = inte.fields.map(f => ({
+              ...f,
+              value: f.value || generateMockValue(f.key, inte.service, f.type, formData)
+            }))
+            
+            return {
+              ...inte,
+              status: 'Generated',
+              generated_at: now.toLocaleString('en-GB', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }),
+              fields: updatedFields
+            }
+          }
+          return inte
+        })
+      )
+    }, 1500)
+  }
+
+  const handleUpdateCredentialField = (id, fieldKey, value) => {
+    setIntegrations(prev => prev.map(inte => {
+      if (inte.id === id) {
+        return {
+          ...inte,
+          fields: inte.fields.map(f => f.key === fieldKey ? { ...f, value } : f)
+        }
+      }
+      return inte
+    }))
+  }
+
+  const handleAddCustomIntegration = (payload) => {
+    setIntegrations(prev => [...prev, payload])
+  }
+
+  const handleRemoveIntegration = (id) => {
+    setIntegrations(prev => prev.filter(inte => inte.id !== id))
+  }
+
   // Load Draft from LocalStorage and write immediately to Supabase
   const loadDraft = async () => {
     try {
@@ -184,17 +280,36 @@ export const useProjectForm = () => {
         
         await db.projects.save({
           id: localProjectId,
+          client_id: draft.formData?.clientId,
+          project_code: draft.formData?.projectCode,
           client_name: draft.formData?.clientName || 'Draft Client',
           project_name: draft.formData?.projectName || 'Draft Project',
           industry: draft.formData?.industry,
+          business_unit: draft.formData?.businessUnit,
           project_type: draft.formData?.projectType,
           contract_value: parseFloat(draft.formData?.contractValue) || 0,
+          billing_currency: draft.formData?.billingCurrency,
+          engagement_model: draft.formData?.engagementModel,
+          expected_budget: parseFloat(draft.formData?.expectedBudget) || 0,
+          estimated_team_size: parseInt(draft.formData?.estimatedTeamSize) || 0,
+          estimated_duration: draft.formData?.estimatedDuration,
           start_date: draft.formData?.startDate || null,
           end_date: draft.formData?.endDate || null,
-          priority: draft.priority || 'medium',
-          notes: draft.formData?.notes,
-          status: 'active'
-        })
+          project_manager: draft.formData?.projectManager,
+          project_sponsor_name: draft.formData?.projectSponsorName,
+          project_sponsor_designation: draft.formData?.projectSponsorDesignation,
+          client_city: draft.formData?.clientCity,
+          client_country: draft.formData?.clientCountry,
+          delivery_model: draft.formData?.deliveryModel,
+          business_goal: draft.formData?.businessGoal,
+          technical_scope: draft.formData?.technicalScope,
+          success_criteria: draft.formData?.successCriteria,
+          dependencies: draft.formData?.dependencies,
+          known_constraints: draft.formData?.knownConstraints,
+          special_instructions: draft.formData?.specialInstructions,
+          priority: draft.priority || priority,
+          status: draft.formData?.projectStatus || 'Draft'
+        }, true)
         setProjectSavedInDb(true)
 
         if (draft.milestones) {
@@ -327,121 +442,84 @@ export const useProjectForm = () => {
   const getCompleteness = () => {
     let score = 0
     const checks = {
-      details: false,
-      team: false,
-      milestones: false,
-      communication: false,
-      credentials: false
+      client: false,
+      projectName: false,
+      industry: false,
+      dates: false,
+      contractValue: false,
+      projectManager: false,
+      priority: false,
     }
 
-    if (formData.projectName && formData.clientName) {
-      score += 20
-      checks.details = true
+    if (formData.clientName) {
+      score += 15
+      checks.client = true
     }
-    if (teamMembers.length > 0) {
-      score += 20
-      checks.team = true
+    if (formData.projectName) {
+      score += 15
+      checks.projectName = true
     }
-    if (milestones.length > 0) {
-      score += 20
-      checks.milestones = true
+    if (formData.industry && formData.projectType) {
+      score += 14
+      checks.industry = true
     }
-    if (clientContacts.length > 0 || meetings.length > 0) {
-      score += 20
-      checks.communication = true
+    if (formData.startDate && formData.endDate) {
+      score += 14
+      checks.dates = true
     }
-    if (integrations.some(i => i.required)) {
-      score += 20
-      checks.credentials = true
+    if (formData.contractValue) {
+      score += 14
+      checks.contractValue = true
     }
+    if (formData.projectManager) {
+      score += 14
+      checks.projectManager = true
+    }
+    if (priority) {
+      score += 14
+      checks.priority = true
+    }
+
+    // Cap at 100
+    score = Math.min(score, 100)
 
     return { score, checks }
   }
 
   const { score: completenessScore, checks: completenessChecks } = getCompleteness()
 
-  // Dynamic AI Suggestions Builder
-  const getAIRecommendations = () => {
-    const type = (formData.projectType || '').toLowerCase()
-    const ind = (formData.industry || 'Financial Services').toLowerCase()
-    const budget = parseFloat(formData.contractValue) || 0
-    const teamSize = teamMembers.length
+  const [aiRecs, setAiRecs] = useState({
+    recommendedMilestones: [],
+    recommendedRoles: [],
+    recommendedFreq: 'Weekly Sync',
+    riskWarnings: [],
+    advice: 'Fetching AI architecture advice...'
+  })
 
-    let recommendedMilestones = []
-    let recommendedRoles = []
-    let recommendedFreq = 'Weekly Sync'
-    let riskWarnings = []
-    let advice = 'Establish clean collaboration spaces and communication cadences early.'
-
-    if (ind.includes('financial') || ind.includes('finance') || ind.includes('bank')) {
-      advice = 'Financial Services project: Prioritize PCI DSS guidelines, security audits, and data governance.'
-      recommendedMilestones.push(
-        { title: 'PCI DSS Review', description: 'Evaluate cardholder data environment compliance.', durationDays: 5 },
-        { title: 'Security Audit', description: 'System security verification and network scans.', durationDays: 6 },
-        { title: 'Encryption Validation', description: 'Confirm SSL/TLS protocols and databases encryption.', durationDays: 4 }
-      )
-      recommendedRoles.push({ name: 'SecOps Architect', role: 'Security Specialist', department: 'Security', skills: ['PCI DSS', 'IAM', 'TLS'] })
-    } else if (ind.includes('health') || ind.includes('medical')) {
-      advice = 'Healthcare project: Ensure HIPAA compliance and secure patient data encryption audits.'
-      recommendedMilestones.push(
-        { title: 'HIPAA Compliance Audit', description: 'Validate patient record security and audit logging.', durationDays: 6 },
-        { title: 'Data Protection Review', description: 'Verify transport security and access logging.', durationDays: 5 }
-      )
-      recommendedRoles.push({ name: 'Compliance Officer', role: 'HIPAA Auditor', department: 'Auditing', skills: ['HIPAA', 'Encryption'] })
-    } else if (ind.includes('retail') || ind.includes('e-commerce') || ind.includes('commerce')) {
-      advice = 'E-Commerce project: Load testing and payment integrations are critical.'
-      recommendedMilestones.push(
-        { title: 'Payment Gateway Setup', description: 'Configure Stripe/Paypal API keys and sandbox checks.', durationDays: 4 },
-        { title: 'Load Testing', description: 'Verify application performance under peak checkout loads.', durationDays: 5 }
-      )
-      recommendedRoles.push({ name: 'Payment Integrations Dev', role: 'Payment Specialist', department: 'Delivery', skills: ['Stripe', 'Sandbox', 'Performance'] })
-    } else {
-      recommendedMilestones.push(
-        { title: 'Detailed Architecture Review', description: 'Examine design scalability and tech stack choice.', durationDays: 5 }
-      )
-    }
-
-    if (type.includes('cloud') || type.includes('migration') || type.includes('infra')) {
-      recommendedMilestones.push(
-        { title: 'Cloud Landing Zone Setup', description: 'Configure IAM policies, VPC subnetting, and logging.', durationDays: 7 }
-      )
-      recommendedRoles.push({ name: 'Alex K.', role: 'Cloud Solutions Architect', department: 'Cloud Ops', skills: ['Terraform', 'AWS', 'IAM'] })
-    } else if (type.includes('devops') || type.includes('pipeline') || type.includes('ci')) {
-      recommendedMilestones.push(
-        { title: 'Pipeline CI/CD Automation', description: 'Establish main build and deployment pipelines.', durationDays: 6 }
-      )
-      recommendedRoles.push({ name: 'DevOps Lead', role: 'DevOps Engineer', department: 'Ops', skills: ['Docker', 'CI/CD'] })
-    } else if (type.includes('saas') || type.includes('app') || type.includes('develop')) {
-      recommendedMilestones.push(
-        { title: 'Figma Mockup Design Signoff', description: 'Acquire user experience design signoff.', durationDays: 5 },
-        { title: 'Client Acceptance Test (UAT)', description: 'Ensure all functional requirements are validated.', durationDays: 6 }
-      )
-      recommendedRoles.push({ name: 'Lead Dev', role: 'Senior React Developer', department: 'Delivery', skills: ['React', 'Node.js'] })
-    }
-
-    // Budget-based suggestions
-    if (budget > 100000) {
-      advice += ' High-budget project: Setup regular Steering Committee reviews and quality gates.'
-      recommendedRoles.push({ name: 'Delivery Director', role: 'PMO Lead', department: 'Leadership', skills: ['PMO', 'Governance'] })
-    }
-
-    // Timeline-based suggestions
-    if (formData.startDate && formData.endDate) {
-      const diffDays = Math.round((new Date(formData.endDate) - new Date(formData.startDate)) / (1000 * 60 * 60 * 24))
-      if (diffDays < 30) {
-        riskWarnings.push('Timeline Risk: Active project span is under 30 days. Risk of schedule compression.')
+  // Dynamic AI Suggestions Builder (Backend API)
+  useEffect(() => {
+    const fetchAiRecs = async () => {
+      try {
+        const result = await db.ai.recommend({
+          industry: formData.industry,
+          projectType: formData.projectType,
+          contractValue: formData.contractValue,
+          teamSize: teamMembers.length,
+          startDate: formData.startDate,
+          endDate: formData.endDate
+        })
+        if (result) setAiRecs(result)
+      } catch (err) {
+        console.error("AI Recommendation Error:", err)
       }
     }
+    
+    const delayDebounceFn = setTimeout(() => {
+      fetchAiRecs()
+    }, 1000)
 
-    // Team Size-based suggestions
-    if (teamSize < 2) {
-      riskWarnings.push('Resource Risk: Only 1 team member assigned. Single point of failure risk.')
-    }
-
-    return { recommendedMilestones, recommendedRoles, recommendedFreq, riskWarnings, advice }
-  }
-
-  const aiRecs = getAIRecommendations()
+    return () => clearTimeout(delayDebounceFn)
+  }, [formData.industry, formData.projectType, formData.contractValue, teamMembers.length, formData.startDate, formData.endDate])
 
   // Real-time addition of suggested milestone recommendation
   const handleAddSuggestedMilestone = async (rec) => {
@@ -688,9 +766,7 @@ export const useProjectForm = () => {
         await db.channels.save({
           id: ch.id || undefined,
           project_id: localProjectId,
-          type: ch.type,
           name: ch.name,
-          description: ch.description,
           channel_url: ch.channel_url || `#proj-${formData.projectName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
           is_active: ch.is_active
         })
@@ -860,33 +936,7 @@ ${milestones.map((m, i) => `- ${m.title}: ${m.start_date} to ${m.end_date} - Sta
 
   const handleDownloadPackage = () => {
     console.log("Clicked: Download Package Button")
-    const fullPackage = {
-      version: '1.0.0',
-      clientName: formData.clientName,
-      projectName: formData.projectName,
-      industry: formData.industry,
-      projectType: formData.projectType,
-      contractValue: formData.contractValue,
-      startDate: formData.startDate,
-      endDate: formData.endDate,
-      projectManager: formData.projectManager,
-      notes: formData.notes,
-      priority,
-      teamMembers,
-      channels,
-      meetings,
-      clientContacts,
-      integrations,
-      milestones,
-      risks,
-      deliverables,
-      timestamp: new Date().toISOString()
-    }
-    const blob = new Blob([JSON.stringify(fullPackage, null, 2)], { type: 'application/json' })
-    const link = document.createElement('a')
-    link.href = URL.createObjectURL(blob)
-    link.download = `${(formData.projectName || 'project').toLowerCase().replace(/\s+/g, '-')}-package-configuration.json`
-    link.click()
+    showToast('Package is generated on submission. Click "Generate Package" in the Review step.', 'info')
   }
 
   const handleSharePackage = () => {
@@ -902,13 +952,23 @@ ${milestones.map((m, i) => `- ${m.title}: ${m.start_date} to ${m.end_date} - Sta
   const handleSubmit = async (e) => {
     if (e) e.preventDefault()
     console.log("Clicked: Submit Project Creation Form / Generate Package")
-    if (!formData.projectName || !formData.clientName) {
-      setDbError('Client Name and Project Name are required in Step 1')
-      setCurrentStep(1)
+    
+    // Strict Package Generation Validation
+    const missing = []
+    if (!formData.projectName || !formData.clientName) missing.push('Project Details')
+    if (teamMembers.length === 0) missing.push('Team Members')
+    if (channels.length === 0 && meetings.length === 0) missing.push('Communication Plan')
+    if (milestones.length === 0) missing.push('Milestones Timeline')
+
+    if (missing.length > 0) {
+      const errorMsg = `Please complete the following required sections: ${missing.join(', ')}`
+      setDbError(errorMsg)
+      showToast(errorMsg, 'error')
       return
     }
 
     setLoading(true)
+    setIsGenerating(true)
 
     try {
       // Execute final details save to DB
@@ -924,20 +984,45 @@ ${milestones.map((m, i) => `- ${m.title}: ${m.start_date} to ${m.end_date} - Sta
         owner_id: teamMembers[0]?.id || null
       })
 
+      // Generate package from backend
+      const result = await db.packages.generate(localProjectId, {
+        risks,
+        deliverables,
+        teamMembers,
+        milestones,
+        integrations,
+        channels,
+        meetings,
+        clientContacts,
+        aiRecs,
+        completenessScore,
+        projectData: formData,
+        userName: userProfile?.fullName || 'Alex Morgan'
+      })
+
+      // Save files to sessionStorage to pass to the success page (Removed mock usage)
+      
       showToast('Project Kickoff Package Generated!', 'success')
       setSuccess(true)
       localStorage.removeItem('ko_project_creation_draft')
       setProjectId(localProjectId)
       await refreshProjects()
 
+      // Allow the modal to finish its animation sequence before navigating
       setTimeout(() => {
         setSuccess(false)
         setLoading(false)
-        navigate('/dashboard')
-      }, 1500)
+        setIsGenerating(false)
+        if (result && result.package) {
+          navigate(`/packages/${result.package.id}`)
+        } else {
+          navigate(`/packages/${localProjectId}`)
+        }
+      }, 3500) // 400ms * 11 steps + some buffer
 
     } catch (err) {
       setLoading(false)
+      setIsGenerating(false)
       setDbError(err.message || 'Error generating kickoff package')
     }
   }
@@ -953,6 +1038,7 @@ ${milestones.map((m, i) => `- ${m.title}: ${m.start_date} to ${m.end_date} - Sta
     setHasDraft,
     loading,
     setLoading,
+    isGenerating,
     success,
     setSuccess,
     dbError,
@@ -1001,8 +1087,8 @@ ${milestones.map((m, i) => `- ${m.title}: ${m.start_date} to ${m.end_date} - Sta
     setMeetTime,
     meetDuration,
     setMeetDuration,
-    integrations,
-    setIntegrations,
+    integrations, setIntegrations, handleGenerateCredentials, handleUpdateCredentialField, handleAddCustomIntegration, handleRemoveIntegration,
+    integrationsEnv, setIntegrationsEnv,
     milestones,
     setMilestones,
     showAddMilestoneInline,

@@ -171,7 +171,19 @@ export const Credentials = () => {
                   </div>
                   <div>
                     <h4 className="font-headline-sm text-headline-sm text-on-surface">{cred.service}</h4>
-                    <p className="text-label-md text-on-surface-variant">{cred.description}</p>
+                    <p className="text-label-md text-on-surface-variant mb-2">{cred.description}</p>
+                    
+                    {/* Render config details if they exist */}
+                    {cred.config && Object.keys(cred.config).length > 0 && (
+                      <div className="grid grid-cols-2 gap-x-6 gap-y-1 mt-1">
+                        {Object.entries(cred.config).map(([k, v]) => (
+                          <div key={k} className="text-xs">
+                            <span className="text-outline uppercase font-bold mr-2">{k.replace(/([A-Z])/g, ' $1').trim()}:</span>
+                            <span className="text-on-surface">{typeof v === 'object' ? JSON.stringify(v) : String(v)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-4">

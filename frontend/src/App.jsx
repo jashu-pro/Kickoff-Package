@@ -19,6 +19,7 @@ const Credentials = React.lazy(() => import('./pages/Credentials').then(m => ({ 
 const Team = React.lazy(() => import('./pages/Team').then(m => ({ default: m.Team })))
 const Management = React.lazy(() => import('./pages/Management').then(m => ({ default: m.Management })))
 const DeleteHistory = React.lazy(() => import('./pages/DeleteHistory').then(m => ({ default: m.DeleteHistory })))
+const PackageDetails = React.lazy(() => import('./features/packages/PackageDetails').then(m => ({ default: m.PackageDetails })))
 
 function App() {
   const { addToast } = useToast()
@@ -46,6 +47,7 @@ function App() {
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/delete-history" element={<ProtectedRoute allowedRoles={['admin', 'manager']}><DeleteHistory /></ProtectedRoute>} />
             <Route path="/projects/new" element={<ProtectedRoute allowedRoles={['admin', 'manager']}><ProjectCreation /></ProtectedRoute>} />
+            <Route path="/packages/:packageId" element={<ProtectedRoute><PackageDetails /></ProtectedRoute>} />
             <Route path="/projects" element={<ProtectedRoute><Management /></ProtectedRoute>} />
             <Route path="/credentials" element={<ProtectedRoute allowedRoles={['admin']}><Credentials /></ProtectedRoute>} />
             <Route path="/communication" element={<ProtectedRoute><Communication /></ProtectedRoute>} />

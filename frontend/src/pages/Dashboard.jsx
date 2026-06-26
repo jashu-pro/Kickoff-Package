@@ -8,12 +8,14 @@ import { db } from '../lib/db'
 
 export const Dashboard = () => {
   const navigate = useNavigate()
-  const { projects, setProjectId, projectId } = useProject()
+  const { projects, setProjectId, projectId, project } = useProject()
   const { showToast } = useToast()
   
   const [allTasks, setAllTasks] = useState([])
   const [allMembers, setAllMembers] = useState([])
   const [allMilestones, setAllMilestones] = useState([])
+  const [activities, setActivities] = useState([])
+  const [recentPackages, setRecentPackages] = useState([])
   const [metricsLoading, setMetricsLoading] = useState(true)
   
   // Modals state
@@ -33,14 +35,22 @@ export const Dashboard = () => {
   const fetchMetrics = async () => {
     setMetricsLoading(true)
     try {
-      const [tasksData, membersData, msData] = await Promise.all([
+      const [tasksData, membersData, msData, activitiesData, packagesData] = await Promise.all([
         db.tasks.list(),
         db.team_members.list(),
-        db.milestones.list()
+        db.milestones.list(),
+        db.activities.list(),
+        db.packages.list()
       ])
       setAllTasks(tasksData)
       setAllMembers(membersData)
       setAllMilestones(msData)
+      setActivities(activitiesData || [])
+      
+      // Sort packages by created_at descending
+      const sortedPkgs = (packagesData || []).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      setRecentPackages(sortedPkgs.slice(0, 5));
+
     } catch (err) {
       console.error('Failed to load dashboard metrics:', err)
     } finally {
@@ -190,6 +200,75 @@ export const Dashboard = () => {
           )}
         </div>
 
+        {/* Active Project Spotlight */}
+        {projectId && project && (
+          <div className="bg-surface-container-lowest border border-border-subtle rounded-2xl shadow-sm overflow-hidden mb-8">
+            <div className="bg-surface-container px-6 py-4 border-b border-border-subtle flex justify-between items-center">
+              <h3 className="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+                <Icon name="star" className="text-primary" /> Active Project Spotlight
+              </h3>
+              <span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant bg-surface-base px-3 py-1 rounded-full border border-border-subtle shadow-sm">
+                {project.project_code || 'CODE-TBD'}
+              </span>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+                <div>
+                  <span className="text-[10px] text-outline font-bold uppercase block mb-1">Project Name</span>
+                  <span className="text-sm font-bold text-on-surface">{project.project_name}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-outline font-bold uppercase block mb-1">Client</span>
+                  <span className="text-sm font-bold text-on-surface">{project.client_name}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-outline font-bold uppercase block mb-1">Project Manager</span>
+                  <span className="text-sm font-bold text-on-surface flex items-center gap-1.5">
+                    <Icon name="person" size={14} className="text-primary" /> {project.project_manager || 'Unassigned'}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-outline font-bold uppercase block mb-1">Status & Priority</span>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${getProjectProgressAndStatus(project).statusColor}`}>
+                      {getProjectProgressAndStatus(project).statusLabel}
+                    </span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-surface-container-high text-on-surface border border-border-subtle">
+                      {project.priority || 'Medium'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-5 border-t border-border-subtle grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div className="flex gap-8">
+                  <div>
+                    <span className="text-[10px] text-outline font-bold uppercase block mb-1 flex items-center gap-1"><Icon name="play_arrow" size={12}/> Start Date</span>
+                    <span className="text-xs font-semibold text-on-surface">{project.start_date ? new Date(project.start_date).toLocaleDateString() : 'TBD'}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-outline font-bold uppercase block mb-1 flex items-center gap-1"><Icon name="flag" size={12}/> End Date</span>
+                    <span className="text-xs font-semibold text-on-surface">{project.end_date ? new Date(project.end_date).toLocaleDateString() : 'TBD'}</span>
+                  </div>
+                </div>
+                
+                <div className="w-full">
+                  <div className="flex justify-between text-[10px] font-bold uppercase mb-1.5">
+                    <span className="text-on-surface-variant">Project Completion</span>
+                    <span className="text-primary">{getProjectProgressAndStatus(project).progress}%</span>
+                  </div>
+                  <div className="w-full h-2.5 bg-surface-container rounded-full overflow-hidden border border-border-subtle/50">
+                    <div
+                      className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
+                      style={{ width: `${getProjectProgressAndStatus(project).progress}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-8">
           {metricsLoading
@@ -255,17 +334,19 @@ export const Dashboard = () => {
                 return (
                   <div
                     key={project.id || idx}
-                    onClick={() => {
-                      console.log("Clicked: Project Card", project.project_name)
-                      setProjectId(project.id)
-                      showToast(`Active project switched to: ${project.project_name}`, 'success')
-                    }}
-                    className={`p-margin-md hover:bg-surface-container-low transition-all cursor-pointer relative ${
+                    className={`p-margin-md hover:bg-surface-container-low transition-all relative ${
                       isSelected ? 'border-l-4 border-primary bg-primary/5' : ''
                     }`}
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <div>
+                      <div 
+                        className="cursor-pointer"
+                        onClick={() => {
+                          console.log("Clicked: Project Card", project.project_name)
+                          setProjectId(project.id)
+                          showToast(`Active project switched to: ${project.project_name}`, 'success')
+                        }}
+                      >
                         <h4 className="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
                           {project.project_name}
                           {isSelected && (
@@ -274,9 +355,22 @@ export const Dashboard = () => {
                         </h4>
                         <p className="text-label-md text-on-surface-variant">{project.client_name}</p>
                       </div>
-                      <span className={`text-label-sm font-label-sm px-2 py-0.5 rounded ${statusColor}`}>
-                        {statusLabel}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        {project.status === 'active' && (
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/packages/${project.id}`);
+                            }}
+                            className="bg-primary/10 text-primary hover:bg-primary text-xs hover:text-white font-bold px-3 py-1 rounded transition-colors border border-primary/20 hover:border-primary"
+                          >
+                            View Package
+                          </button>
+                        )}
+                        <span className={`text-label-sm font-label-sm px-2 py-0.5 rounded ${statusColor}`}>
+                          {statusLabel}
+                        </span>
+                      </div>
                     </div>
                     <div className="mt-3">
                       <div className="flex justify-between text-label-sm font-label-sm mb-1">
@@ -360,6 +454,72 @@ export const Dashboard = () => {
                         <p className="text-label-sm text-on-surface-variant truncate">{item.project}</p>
                       </div>
                       <span className="text-label-md font-label-md text-outline shrink-0">{item.date}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Recent Packages */}
+            <div className="bg-surface-base border border-border-subtle rounded-xl p-margin-md shadow-sm mt-8">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-headline-sm text-headline-sm">Recent Packages</h3>
+              </div>
+              <div className="divide-y divide-border-subtle">
+                {recentPackages.length === 0 ? (
+                  <div className="p-8 text-center text-on-surface-variant">
+                    <Icon name="inventory_2" size={32} className="mx-auto text-outline mb-2" />
+                    <p className="text-body-md text-outline">No packages generated.</p>
+                  </div>
+                ) : (
+                  recentPackages.map((pkg) => {
+                    const relatedProject = projects.find(p => p.id === pkg.project_id);
+                    return (
+                      <div key={pkg.id} className="p-margin-md hover:bg-surface-container-low transition-all">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h4 className="font-headline-sm text-headline-sm text-on-surface">
+                              {relatedProject?.project_name || 'Unknown Project'}
+                            </h4>
+                            <p className="text-label-sm text-on-surface-variant">Client: {relatedProject?.client_name || 'N/A'}</p>
+                            <div className="flex gap-2 mt-2">
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-status-success/10 text-status-success">
+                                Version {pkg.version}
+                              </span>
+                              <span className="text-[10px] text-outline">
+                                {new Date(pkg.created_at).toLocaleDateString()}
+                              </span>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => navigate(`/packages/${pkg.id}`)}
+                            className="bg-primary/10 text-primary hover:bg-primary text-xs hover:text-white font-bold px-3 py-1 rounded transition-colors"
+                          >
+                            Details
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+
+            {/* Recent Activity */}
+            <div className="bg-surface-base border border-border-subtle rounded-xl p-margin-md shadow-sm">
+              <h3 className="font-headline-sm text-headline-sm mb-4">Recent Activity</h3>
+              <div className="space-y-4">
+                {activities.length === 0 ? (
+                  <p className="text-body-md text-on-surface-variant italic text-center py-2">No recent activity.</p>
+                ) : (
+                  activities.slice(0, 5).map((act, idx) => (
+                    <div key={idx} className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
+                      <div>
+                        <p className="font-body-sm text-body-sm text-on-surface"><strong>{act.created_by}</strong> {act.action}</p>
+                        <p className="text-label-sm text-on-surface-variant mt-0.5">{act.description}</p>
+                        <span className="text-[10px] text-outline mt-1 block">{new Date(act.created_at).toLocaleString()}</span>
+                      </div>
                     </div>
                   ))
                 )}

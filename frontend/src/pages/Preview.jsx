@@ -56,7 +56,7 @@ export const Preview = () => {
   useEffect(() => {
     if (project) {
       const shList = stakeholders.map(s => s.email).filter(Boolean).join(', ')
-      setEmailTo(shList || 'stakeholders@client.com')
+      setEmailTo(shList || '')
       setEmailSubject(`Project Kickoff: ${project.project_name} Strategy Alignment`)
       
       const teamList = teamMembers.map(t => `- ${t.name} (${t.role})`).join('\n')
@@ -65,9 +65,9 @@ export const Preview = () => {
       setEmailBody(
         `Dear Stakeholders,\n\n` +
         `We are excited to share the Kickoff Strategy recap for "${project.project_name}".\n\n` +
-        `Primary Objective:\n${project.notes || 'Modernize system infrastructure and deliver consultant alignment.'}\n\n` +
-        `Core Project Team:\n${teamList || '- Sarah Jenkins (Project Manager)'}\n\n` +
-        `Timeline Milestones:\n${msList || '- Discovery & Audit phase'}\n\n` +
+        `Primary Objective:\n${project.notes || 'Ensure project alignment.'}\n\n` +
+        `Core Project Team:\n${teamList || 'No team assigned yet.'}\n\n` +
+        `Timeline Milestones:\n${msList || 'No milestones scheduled yet.'}\n\n` +
         `Regards,\nKickoffGen Automation`
       )
     }

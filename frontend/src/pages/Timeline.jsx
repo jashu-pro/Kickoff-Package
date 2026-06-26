@@ -154,10 +154,10 @@ export const Timeline = () => {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-primary bg-surface-container-high px-2 py-0.5 rounded text-label-sm font-label-sm uppercase">
-                PROJECT ID: #{projectId ? projectId.substring(0, 8) : '2026-081'}
+                PROJECT ID: #{projectId ? projectId.substring(0, 8) : ''}
               </span>
               <h2 className="text-on-surface-variant font-label-md text-label-md">
-                {project ? project.client_name : 'Consultancy Engagements'}
+                {project ? project.client_name : ''}
               </h2>
             </div>
             <h1 className="font-display-lg text-display-lg text-on-surface">Execution Timeline</h1>
@@ -170,7 +170,7 @@ export const Timeline = () => {
               <div>
                 <p className="text-label-sm font-label-sm text-outline uppercase tracking-wider">Start Date</p>
                 <p className="font-headline-sm text-headline-sm">
-                  {project?.start_date ? new Date(project.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Jan 12'}
+                  {project?.start_date ? new Date(project.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'TBD'}
                 </p>
               </div>
             </div>
@@ -181,7 +181,7 @@ export const Timeline = () => {
               <div>
                 <p className="text-label-sm font-label-sm text-outline uppercase tracking-wider">Target End</p>
                 <p className="font-headline-sm text-headline-sm">
-                  {project?.end_date ? new Date(project.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Aug 15'}
+                  {project?.end_date ? new Date(project.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'TBD'}
                 </p>
               </div>
             </div>
@@ -266,7 +266,7 @@ export const Timeline = () => {
                                   : 'bg-slate-100 text-slate-600 border-slate-200'
                           } px-3 py-1 rounded-full whitespace-nowrap`}
                         >
-                          {milestone.dates || 'TBD'}
+                          {milestone.start_date ? new Date(milestone.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : (milestone.dates || 'TBD')}
                         </span>
                       </div>
                       <div className="md:w-1/2 md:pl-12 mt-4 md:mt-0 w-full">
@@ -401,7 +401,7 @@ export const Timeline = () => {
                                   : 'bg-slate-100 text-slate-600 border-slate-200'
                           } px-3 py-1 rounded-full whitespace-nowrap`}
                         >
-                          {milestone.dates || 'TBD'}
+                          {milestone.start_date ? new Date(milestone.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : (milestone.dates || 'TBD')}
                         </span>
                       </div>
                       <div className="md:w-1/2 md:pr-12 mt-4 md:mt-0 w-full">
@@ -477,7 +477,7 @@ export const Timeline = () => {
               <div className="text-center">
                 <p className="text-label-sm font-label-sm text-outline uppercase tracking-tighter">PROJECT COMPLETION</p>
                 <p className="font-headline-md text-headline-md">
-                  {project?.end_date ? new Date(project.end_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'August 15, 2026'}
+                  {project?.end_date ? new Date(project.end_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'TBD'}
                 </p>
               </div>
             </div>

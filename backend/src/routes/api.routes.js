@@ -2,13 +2,16 @@ import express from 'express'
 import { getCollection, createRecord, deleteCollection } from '../controllers/collection.controller.js'
 import { getRecord, updateRecord, deleteRecord, handleNotificationAction } from '../controllers/record.controller.js'
 import { checkDuplicate, markAllRead } from '../services/notification.service.js'
+import { getAIRecommendations } from '../controllers/ai.controller.js'
+import { generateKickoffPackage } from '../controllers/package.controller.js'
 
 const router = express.Router()
 
 const tables = [
   'projects', 'team_members', 'tasks', 'milestones', 
   'communication_channels', 'stakeholders', 'escalation_levels', 
-  'meeting_frequencies', 'integrations', 'notifications'
+  'meeting_frequencies', 'integrations', 'notifications',
+  'risks', 'activities', 'deliverables', 'kickoff_packages'
 ]
 
 const validateTable = (req, res, next) => {
@@ -21,6 +24,12 @@ const validateTable = (req, res, next) => {
 }
 
 router.get('/health', (req, res) => res.status(200).json({ ok: true }))
+
+// AI Recommendations
+router.post('/ai/recommend', getAIRecommendations)
+
+// Package Generation
+router.post('/projects/:id/generate_package', generateKickoffPackage)
 
 // Custom notification routes
 router.get('/notifications/check-duplicate', async (req, res, next) => {

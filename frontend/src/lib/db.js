@@ -182,5 +182,19 @@ export const db = {
     delete: async (id) => apiFetch(`/notifications/${id}`, { method: 'DELETE' }),
     restore: async (id) => apiFetch(`/notifications/${id}/restore`, { method: 'POST' }),
     deletePermanent: async (id) => apiFetch(`/notifications/${id}/permanent`, { method: 'DELETE' })
+  },
+
+  ai: {
+    recommend: async (data) => apiFetch('/ai/recommend', { method: 'POST', body: JSON.stringify(data) })
+  },
+
+  packages: {
+    list: async (projectId) => apiFetch(projectId ? `/kickoff_packages?project_id=${projectId}` : '/kickoff_packages'),
+    get: async (id) => apiFetch(`/kickoff_packages/${id}`),
+    generate: async (projectId, data) => apiFetch(`/projects/${projectId}/generate_package`, { method: 'POST', body: JSON.stringify(data) })
+  },
+
+  activities: {
+    list: async (projectId) => apiFetch(projectId ? `/activities?project_id=${projectId}` : '/activities')
   }
 }
