@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Layout } from '../../components/Layout';
 import { Icon } from '../../components/Icon';
 import { useToast } from '../../components/Toast';
+import { db } from '../../lib/db';
 
 export const PackageDetails = () => {
   const { packageId } = useParams();
@@ -11,6 +12,7 @@ export const PackageDetails = () => {
   
   const [packageRecord, setPackageRecord] = useState(null);
   const [projectData, setProjectData] = useState(null);
+  const [stats, setStats] = useState({ team: 0, milestones: 0, channels: 0, integrations: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,6 +23,20 @@ export const PackageDetails = () => {
         if (pkg && pkg.project_id) {
           const proj = await db.projects.get(pkg.project_id);
           setProjectData(proj);
+          
+          // Fetch stats
+          const [team, miles, chans, ints] = await Promise.all([
+            db.team_members.list(pkg.project_id),
+            db.milestones.list(pkg.project_id),
+            db.channels.list(pkg.project_id),
+            db.integrations.list(pkg.project_id)
+          ]);
+          setStats({
+            team: team?.length || 0,
+            milestones: miles?.length || 0,
+            channels: chans?.length || 0,
+            integrations: ints?.length || 0
+          });
         }
       } catch (e) {
         console.error("Failed to load package", e);
@@ -251,19 +267,19 @@ export const PackageDetails = () => {
                 
                 <div className="pt-4 border-t border-border-subtle grid grid-cols-2 gap-4 text-center">
                   <div className="bg-surface-container-low p-2 rounded-lg">
-                    <div className="text-lg font-bold text-primary">{teamMembers?.length || 0}</div>
+                    <div className="text-lg font-bold text-primary">{stats.team}</div>
                     <div className="text-[10px] font-bold text-outline uppercase mt-0.5">Team</div>
                   </div>
                   <div className="bg-surface-container-low p-2 rounded-lg">
-                    <div className="text-lg font-bold text-primary">{milestones?.length || 0}</div>
+                    <div className="text-lg font-bold text-primary">{stats.milestones}</div>
                     <div className="text-[10px] font-bold text-outline uppercase mt-0.5">Milestones</div>
                   </div>
                   <div className="bg-surface-container-low p-2 rounded-lg">
-                    <div className="text-lg font-bold text-primary">{channels?.length || 0}</div>
+                    <div className="text-lg font-bold text-primary">{stats.channels}</div>
                     <div className="text-[10px] font-bold text-outline uppercase mt-0.5">Channels</div>
                   </div>
                   <div className="bg-surface-container-low p-2 rounded-lg">
-                    <div className="text-lg font-bold text-primary">{integrations?.length || 0}</div>
+                    <div className="text-lg font-bold text-primary">{stats.integrations}</div>
                     <div className="text-[10px] font-bold text-outline uppercase mt-0.5">Credentials</div>
                   </div>
                 </div>
