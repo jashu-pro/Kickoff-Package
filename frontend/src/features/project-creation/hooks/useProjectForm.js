@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useProject } from '../../../context/ProjectContext'
 import { useToast } from '../../../components/Toast'
 import { db, generateUUID } from '../../../lib/db'
-import { INTEGRATION_CATEGORIES, INTEGRATIONS_TEMPLATE, generateMockValue } from '../config/integrations.config.js'
+import { INTEGRATION_CATEGORIES, INTEGRATIONS_TEMPLATE } from '../config/integrations.config.js'
 
 export const useProjectForm = () => {
   const navigate = useNavigate()
@@ -234,7 +234,7 @@ export const useProjectForm = () => {
             const now = new Date()
             const updatedFields = inte.fields.map(f => ({
               ...f,
-              value: f.value || generateMockValue(f.key, inte.service, f.type, formData)
+              value: f.value || 'Pending Setup'
             }))
             
             return {

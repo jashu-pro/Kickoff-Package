@@ -11,7 +11,6 @@ const navItems = [
   { to: '/timeline', icon: 'schedule', label: 'Timeline' },
   { to: '/team', icon: 'groups', label: 'Team Intro' },
   { to: '/milestones', icon: 'checklist', label: 'Milestones' },
-  { to: '/preview', icon: 'visibility', label: 'Preview' },
   { to: '/management', icon: 'inventory_2', label: 'Management' },
 ]
 

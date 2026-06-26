@@ -11,10 +11,8 @@ export const Login = () => {
   const { session } = useAuth()
   const { showToast } = useToast()
 
-  const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [fullName, setFullName] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -44,7 +42,7 @@ export const Login = () => {
     e.preventDefault()
     setValidationError('')
 
-    if (!email || !password || (!isLogin && !fullName)) {
+    if (!email || !password) {
       setValidationError('Please fill in all required fields.')
       return
     }
@@ -59,23 +57,9 @@ export const Login = () => {
     try {
       if (!supabase) throw new Error("Supabase is not configured.")
 
-      if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password })
-        if (error) throw error
-        showToast('Successfully signed in!', 'success')
-      } else {
-        const { error } = await supabase.auth.signUp({ 
-          email, 
-          password,
-          options: {
-            data: {
-              full_name: fullName
-            }
-          }
-        })
-        if (error) throw error
-        showToast('Account created successfully! You may need to verify your email.', 'success')
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) throw error
+      showToast('Successfully signed in!', 'success')
 
       if (rememberMe) {
         localStorage.setItem('ko_remembered_email', email)
@@ -134,7 +118,7 @@ export const Login = () => {
 
         <div className="bg-surface-base py-8 px-6 sm:px-10 border border-border-subtle rounded-xl shadow-lg relative overflow-hidden">
           <h2 className="font-headline-md text-headline-md text-on-surface mb-6 text-center">
-            {isLogin ? 'Sign In' : 'Create Account'}
+            Sign In
           </h2>
 
           {validationError && (
@@ -145,22 +129,6 @@ export const Login = () => {
           )}
 
           <form className="space-y-6" onSubmit={handleAuth}>
-            {!isLogin && (
-              <div className="space-y-1">
-                <label className="font-label-md text-label-md text-on-surface-variant" htmlFor="fullname">
-                  Full Name
-                </label>
-                <input
-                  id="fullname"
-                  type="text"
-                  required
-                  placeholder="Alex Morgan"
-                  className="w-full bg-surface-base border border-border-subtle rounded-lg px-3 py-2.5 font-body-md text-body-md placeholder:text-outline-variant transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                />
-              </div>
-            )}
 
             <div className="space-y-1">
               <label className="font-label-md text-label-md text-on-surface-variant" htmlFor="email">
@@ -183,21 +151,19 @@ export const Login = () => {
                 <label className="font-label-md text-label-md text-on-surface-variant" htmlFor="password">
                   Password
                 </label>
-                {isLogin && (
-                  <button
-                    type="button"
-                    onClick={() => setShowForgotModal(true)}
-                    className="text-label-md text-primary font-semibold hover:underline bg-transparent border-0 outline-none"
-                  >
-                    Forgot Password?
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setShowForgotModal(true)}
+                  className="text-label-md text-primary font-semibold hover:underline bg-transparent border-0 outline-none"
+                >
+                  Forgot Password?
+                </button>
               </div>
               <input
                 id="password"
                 type="password"
                 required
-                autoComplete={isLogin ? "current-password" : "new-password"}
+                autoComplete="current-password"
                 placeholder="••••••••"
                 className="w-full bg-surface-base border border-border-subtle rounded-lg px-3 py-2.5 font-body-md text-body-md placeholder:text-outline-variant transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
                 value={password}
@@ -227,25 +193,13 @@ export const Login = () => {
               {loading ? (
                 <span className="flex items-center gap-2">
                   <Icon name="progress_activity" size={18} className="animate-spin text-white" />
-                  {isLogin ? 'Signing In...' : 'Creating Account...'}
+                  Signing In...
                 </span>
               ) : (
-                isLogin ? 'Sign In' : 'Create Account'
+                'Sign In'
               )}
             </button>
           </form>
-
-          <div className="mt-6 text-center">
-            <button
-              onClick={() => {
-                setIsLogin(!isLogin)
-                setValidationError('')
-              }}
-              className="text-body-md text-primary hover:underline"
-            >
-              {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
-            </button>
-          </div>
         </div>
       </div>
 

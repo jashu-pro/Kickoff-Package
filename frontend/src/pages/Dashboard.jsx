@@ -11,7 +11,6 @@ export const Dashboard = () => {
   const { projects, setProjectId, projectId, project } = useProject()
   const { showToast } = useToast()
   
-  const [allTasks, setAllTasks] = useState([])
   const [allMembers, setAllMembers] = useState([])
   const [allMilestones, setAllMilestones] = useState([])
   const [activities, setActivities] = useState([])
@@ -35,14 +34,12 @@ export const Dashboard = () => {
   const fetchMetrics = async () => {
     setMetricsLoading(true)
     try {
-      const [tasksData, membersData, msData, activitiesData, packagesData] = await Promise.all([
-        db.tasks.list(),
+      const [membersData, msData, activitiesData, packagesData] = await Promise.all([
         db.team_members.list(),
         db.milestones.list(),
         db.activities.list(),
         db.packages.list()
       ])
-      setAllTasks(tasksData)
       setAllMembers(membersData)
       setAllMilestones(msData)
       setActivities(activitiesData || [])
@@ -72,13 +69,11 @@ export const Dashboard = () => {
   // Calculations
   const activeProjectsCount = projects.filter((p) => p.status === 'active' || p.status === 'on_track').length
   const totalTeamMembers = Array.from(new Set(allMembers.map((m) => m.name))).length
-  const completedTasksCount = allTasks.filter((t) => t.status === 'completed' || t.completed === true).length
   const upcomingMilestonesCount = allMilestones.filter((m) => m.status === 'scheduled' || m.status === 'in_progress').length
 
   const stats = [
     { label: 'Active Projects', value: String(activeProjectsCount), icon: 'folder', trend: '', path: '/projects' },
     { label: 'Team Members', value: String(totalTeamMembers), icon: 'groups', trend: '', path: '/team' },
-    { label: 'Tasks Completed', value: String(completedTasksCount), icon: 'task_alt', trend: '', path: '/tasks' },
     { label: 'Upcoming Milestones', value: String(upcomingMilestonesCount), icon: 'flag', trend: '', path: '/milestones' },
   ]
 
@@ -88,26 +83,6 @@ export const Dashboard = () => {
       return { progress: 100, statusLabel: 'Completed', statusColor: 'bg-status-success/10 text-status-success' }
     }
     
-    const pTasks = allTasks.filter((t) => t.project_id === proj.id)
-    if (pTasks.length === 0) {
-      let statusLabel = 'On Track'
-      let statusColor = 'bg-status-success/10 text-status-success'
-      if (proj.status === 'at_risk') {
-        statusLabel = 'At Risk'
-        statusColor = 'bg-status-warning/10 text-status-warning'
-      } else if (proj.status === 'on_hold') {
-        statusLabel = 'On Hold'
-        statusColor = 'bg-outline-variant/10 text-outline'
-      } else if (proj.status === 'completed') {
-        statusLabel = 'Completed'
-        statusColor = 'bg-status-success/10 text-status-success'
-      }
-      return { progress: 0, statusLabel, statusColor }
-    }
-
-    const completed = pTasks.filter((t) => t.status === 'completed' || t.completed === true).length
-    const progress = Math.round((completed / pTasks.length) * 100)
-    
     let statusLabel = 'On Track'
     let statusColor = 'bg-status-success/10 text-status-success'
     if (proj.status === 'at_risk') {
@@ -116,9 +91,11 @@ export const Dashboard = () => {
     } else if (proj.status === 'on_hold') {
       statusLabel = 'On Hold'
       statusColor = 'bg-outline-variant/10 text-outline'
+    } else if (proj.status === 'completed') {
+      statusLabel = 'Completed'
+      statusColor = 'bg-status-success/10 text-status-success'
     }
-
-    return { progress, statusLabel, statusColor }
+    return { progress: 0, statusLabel, statusColor }
   }
 
   // Handle adding team member
@@ -166,20 +143,7 @@ export const Dashboard = () => {
 
   // Deadlines filtering
   const getUpcomingDeadlines = () => {
-    const pendingTasks = allTasks.filter((t) => !t.completed && t.status !== 'completed' && t.due_date)
-    if (pendingTasks.length === 0) return []
-
-    // Sort by due date
-    return pendingTasks.slice(0, 3).map((t) => {
-      const proj = projects.find((p) => p.id === t.project_id)
-      const dateObj = new Date(t.due_date)
-      const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-      return {
-        name: t.title,
-        project: proj ? proj.project_name : 'General',
-        date: formattedDate
-      }
-    })
+    return []
   }
 
   return (
@@ -437,28 +401,7 @@ export const Dashboard = () => {
               </div>
             </div>
 
-            {/* Upcoming Deadlines */}
-            <div className="bg-surface-base border border-border-subtle rounded-xl p-margin-md shadow-sm">
-              <h3 className="font-headline-sm text-headline-sm mb-4">Upcoming Deadlines</h3>
-              <div className="space-y-4">
-                {getUpcomingDeadlines().length === 0 ? (
-                  <p className="text-body-md text-on-surface-variant italic text-center py-2">No upcoming deadlines.</p>
-                ) : (
-                  getUpcomingDeadlines().map((item, idx) => (
-                    <div key={idx} className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                        <Icon name="calendar_today" size={18} className="text-primary" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-body-md text-body-md text-on-surface truncate">{item.name}</p>
-                        <p className="text-label-sm text-on-surface-variant truncate">{item.project}</p>
-                      </div>
-                      <span className="text-label-md font-label-md text-outline shrink-0">{item.date}</span>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
+            {/* Removed Upcoming Deadlines section since tasks are no longer supported */}
 
             {/* Recent Packages */}
             <div className="bg-surface-base border border-border-subtle rounded-xl p-margin-md shadow-sm mt-8">
