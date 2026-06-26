@@ -232,11 +232,11 @@ export const PackageDetails = () => {
               <div className="p-5 space-y-4">
                 <div>
                   <span className="text-[10px] text-outline font-bold uppercase block">Project Name</span>
-                  <span className="text-sm font-bold text-on-surface">{formData?.projectName || 'N/A'}</span>
+                  <span className="text-sm font-bold text-on-surface">{projectData?.project_name || 'N/A'}</span>
                 </div>
                 <div>
                   <span className="text-[10px] text-outline font-bold uppercase block">Client</span>
-                  <span className="text-sm font-bold text-on-surface">{formData?.clientName || 'N/A'}</span>
+                  <span className="text-sm font-bold text-on-surface">{projectData?.client_name || 'N/A'}</span>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>

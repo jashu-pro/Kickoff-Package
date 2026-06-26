@@ -100,9 +100,17 @@ export const generateKickoffPackage = async (req, res, next) => {
     const docxPath = `${id}/v${versionNumber}/Kickoff_Package.docx`
     const jsonPath = `${id}/v${versionNumber}/project.json`
 
-    await supabase.storage.from('packages').upload(pdfPath, pdfBuffer, { contentType: 'application/pdf', upsert: true })
-    await supabase.storage.from('packages').upload(docxPath, docxBuffer, { contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', upsert: true })
-    await supabase.storage.from('packages').upload(jsonPath, jsonBuffer, { contentType: 'application/json', upsert: true })
+    const { error: pdfErr } = await supabase.storage.from('packages').upload(pdfPath, pdfBuffer, { contentType: 'application/pdf', upsert: true })
+    if (pdfErr) {
+      console.error('PDF Upload Error:', pdfErr)
+      throw new Error('Failed to upload PDF. Please check if the "packages" bucket exists and has an INSERT policy in Supabase.')
+    }
+    
+    const { error: docxErr } = await supabase.storage.from('packages').upload(docxPath, docxBuffer, { contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', upsert: true })
+    if (docxErr) throw new Error('Failed to upload DOCX.')
+    
+    const { error: jsonErr } = await supabase.storage.from('packages').upload(jsonPath, jsonBuffer, { contentType: 'application/json', upsert: true })
+    if (jsonErr) throw new Error('Failed to upload JSON.')
 
     const { data: pdfUrlData } = supabase.storage.from('packages').getPublicUrl(pdfPath)
     const { data: docxUrlData } = supabase.storage.from('packages').getPublicUrl(docxPath)
