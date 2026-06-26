@@ -45,8 +45,7 @@ export const Step3Communication = ({ formState }) => {
               value={channels.length > 0 ? channels[0].name : ''}
               onChange={(e) => {
                 if(channels.length === 0) {
-                  // If it doesn't exist, we rely on the handleChannelBlur or change logic 
-                  // to manage the first element. We can simulate it here if needed.
+                  formState.setChannels([{ type: 'Slack', name: e.target.value, description: 'Primary communication channel', channel_url: '', is_active: true }])
                 } else {
                   handleChannelChange(0, 'name', e.target.value)
                 }
@@ -159,26 +158,34 @@ export const Step3Communication = ({ formState }) => {
                 type="button"
                 onClick={async () => {
                   if (!contactName.trim()) return
-                  await saveProjectDetails()
-                  const savedContact = await db.stakeholders.save({
-                    project_id: localProjectId,
-                    name: contactName.trim(),
-                    role: contactRole.trim() || 'Sponsor',
-                    organization: formData.clientName || 'Draft Client',
-                    email: contactEmail.trim(),
-                    phone: contactPhone.trim()
-                  })
-                  setClientContacts([...clientContacts, {
-                    id: savedContact.id,
-                    name: contactName.trim(),
-                    role: contactRole.trim() || 'Sponsor',
-                    organization: formData.clientName,
-                    email: contactEmail.trim(),
-                    phone: contactPhone.trim()
-                  }])
-                  setContactName('')
-                  setContactRole('')
-                  setShowAddContactInline(false)
+                  try {
+                    setDbError(null)
+                    await saveProjectDetails()
+                    const savedContact = await db.stakeholders.save({
+                      project_id: localProjectId,
+                      name: contactName.trim(),
+                      role: contactRole.trim() || 'Sponsor',
+                      organization: formData.clientName || 'Draft Client',
+                      email: contactEmail.trim(),
+                      phone: contactPhone.trim()
+                    })
+                    setClientContacts([...clientContacts, {
+                      id: savedContact.id,
+                      name: contactName.trim(),
+                      role: contactRole.trim() || 'Sponsor',
+                      organization: formData.clientName,
+                      email: contactEmail.trim(),
+                      phone: contactPhone.trim()
+                    }])
+                    setContactName('')
+                    setContactRole('')
+                    setContactEmail('')
+                    setContactPhone('')
+                    setShowAddContactInline(false)
+                  } catch (err) {
+                    console.error(err)
+                    setDbError("Failed to save contact: " + err.message)
+                  }
                 }}
                 className="px-4 py-1.5 bg-primary text-white rounded-lg text-sm font-bold"
               >
@@ -231,26 +238,32 @@ export const Step3Communication = ({ formState }) => {
                 type="button"
                 onClick={async () => {
                   if (!meetName.trim()) return
-                  await saveProjectDetails()
-                  const savedMeet = await db.meetings.save({
-                    project_id: localProjectId,
-                    name: meetName.trim(),
-                    frequency: 'Weekly',
-                    day_of_week: meetDay,
-                    time: meetTime || '10:00 AM',
-                    duration: '30 mins',
-                    attendees: ''
-                  })
-                  setMeetings([...meetings, {
-                    id: savedMeet.id,
-                    name: meetName.trim(),
-                    frequency: 'Weekly',
-                    day_of_week: meetDay,
-                    time: meetTime || '10:00 AM',
-                    duration: '30 mins'
-                  }])
-                  setMeetName('')
-                  setShowAddMeetingInline(false)
+                  try {
+                    setDbError(null)
+                    await saveProjectDetails()
+                    const savedMeet = await db.meetings.save({
+                      project_id: localProjectId,
+                      name: meetName.trim(),
+                      frequency: 'Weekly',
+                      day_of_week: meetDay,
+                      time: meetTime || '10:00 AM',
+                      duration: '30 mins',
+                      attendees: ''
+                    })
+                    setMeetings([...meetings, {
+                      id: savedMeet.id,
+                      name: meetName.trim(),
+                      frequency: 'Weekly',
+                      day_of_week: meetDay,
+                      time: meetTime || '10:00 AM',
+                      duration: '30 mins'
+                    }])
+                    setMeetName('')
+                    setShowAddMeetingInline(false)
+                  } catch (err) {
+                    console.error(err)
+                    setDbError("Failed to save meeting: " + err.message)
+                  }
                 }}
                 className="px-4 py-1.5 bg-primary text-white rounded-lg text-sm font-bold"
               >
@@ -362,11 +375,17 @@ export const Step3Communication = ({ formState }) => {
                   <button type="button" onClick={() => setShowAddContactInline(false)} className="px-3 py-1.5 border border-border-subtle rounded text-xs font-semibold">Cancel</button>
                   <button type="button" onClick={async () => {
                     if (!contactName.trim()) return
-                    const savedContact = await db.stakeholders.save({
-                      project_id: localProjectId, name: contactName.trim(), role: contactRole.trim(), email: contactEmail.trim(), phone: contactPhone.trim(), organization: formData.clientName
-                    })
-                    setClientContacts([...clientContacts, savedContact])
-                    setShowAddContactInline(false)
+                    try {
+                      setDbError(null)
+                      const savedContact = await db.stakeholders.save({
+                        project_id: localProjectId, name: contactName.trim(), role: contactRole.trim(), email: contactEmail.trim(), phone: contactPhone.trim(), organization: formData.clientName
+                      })
+                      setClientContacts([...clientContacts, savedContact])
+                      setShowAddContactInline(false)
+                    } catch (err) {
+                      console.error(err)
+                      setDbError("Failed to save advanced contact: " + err.message)
+                    }
                   }} className="px-4 py-1.5 bg-primary text-white rounded text-xs font-bold">Save Contact</button>
                 </div>
               </div>
@@ -418,9 +437,15 @@ export const Step3Communication = ({ formState }) => {
                   <button type="button" onClick={() => setShowAddMeetingInline(false)} className="px-3 py-1.5 border border-border-subtle rounded text-xs font-semibold">Cancel</button>
                   <button type="button" onClick={async () => {
                     if (!meetName.trim()) return
-                    const savedMeet = await db.meetings.save({ project_id: localProjectId, name: meetName.trim(), frequency: meetFreq, day_of_week: meetDay, time: '10:00 AM', duration: '30 mins' })
-                    setMeetings([...meetings, savedMeet])
-                    setShowAddMeetingInline(false)
+                    try {
+                      setDbError(null)
+                      const savedMeet = await db.meetings.save({ project_id: localProjectId, name: meetName.trim(), frequency: meetFreq, day_of_week: meetDay, time: '10:00 AM', duration: '30 mins' })
+                      setMeetings([...meetings, savedMeet])
+                      setShowAddMeetingInline(false)
+                    } catch (err) {
+                      console.error(err)
+                      setDbError("Failed to save advanced sync: " + err.message)
+                    }
                   }} className="px-4 py-1.5 bg-primary text-white rounded text-xs font-bold">Save Sync</button>
                 </div>
               </div>

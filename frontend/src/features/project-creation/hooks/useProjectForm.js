@@ -198,6 +198,7 @@ export const useProjectForm = () => {
     } catch (err) {
       console.error("Database save project failed:", err)
       setDbError("Database sync failed: " + err.message)
+      throw err
     }
   }
 
