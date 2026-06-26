@@ -135,11 +135,13 @@ export const useProjectForm = () => {
   // Recommendation History Ledger State
   const [addedRecommendationsHistory, setAddedRecommendationsHistory] = useState([])
 
+  const [validationErrors, setValidationErrors] = useState({})
+
   // Load Draft on mount
   useEffect(() => {
     const savedDraft = localStorage.getItem('ko_project_creation_draft')
     if (savedDraft) {
-      setHasDraft(true)
+      loadDraft()
     }
   }, [])
 
@@ -208,10 +210,32 @@ export const useProjectForm = () => {
       ...prev,
       [field]: value,
     }))
+    setValidationErrors(prev => ({ ...prev, [field]: null }))
   }
 
   const handleInputBlur = async () => {
     await saveProjectDetails()
+  }
+
+  const validateCurrentStep = (step) => {
+    const errors = {}
+    let isValid = true
+
+    switch(step) {
+      case 1:
+        if (!formData.clientName?.trim()) { errors.clientName = 'Client Name is required'; isValid = false; }
+        if (!formData.projectName?.trim()) { errors.projectName = 'Project Name is required'; isValid = false; }
+        break;
+      case 3:
+        if (channels.length === 0 && meetings.length === 0) {
+          errors.communication = 'Please add a Primary Channel or a Weekly Sync'; isValid = false;
+        }
+        break;
+      default:
+        break;
+    }
+    setValidationErrors(errors)
+    return isValid;
   }
 
   const handleChannelChange = (index, field, value) => {
@@ -420,6 +444,28 @@ export const useProjectForm = () => {
     setHasDraft(false)
     showToast('Draft workspace cleared', 'info')
   }
+
+  useEffect(() => {
+    // Save draft whenever important state changes
+    if (localProjectId) {
+      saveDraft()
+    }
+  }, [formData, teamMembers, channels, meetings, clientContacts, milestones, integrations, risks, deliverables, currentStep, completenessScore])
+
+  useEffect(() => {
+    setValidationErrors({})
+  }, [currentStep])
+
+  // Auto-initialize channel when reaching Step 3
+  useEffect(() => {
+    if (currentStep === 3 && channels.length === 0) {
+      const defaultName = formData.clientName 
+        ? `#proj-${formData.clientName.toLowerCase().replace(/[^a-z0-9]/g, '')}`
+        : '#project-channel';
+      
+      setChannels([{ type: 'Slack', name: defaultName, description: 'Primary communication channel', channel_url: '', is_active: true }])
+    }
+  }, [currentStep, channels.length, formData.clientName])
 
   const saveDraft = () => {
     const draft = {
@@ -1134,6 +1180,8 @@ ${milestones.map((m, i) => `- ${m.title}: ${m.start_date} to ${m.end_date} - Sta
     handleAddMilestoneSubmit,
     handleAddMemberSubmit,
     handleExportPDF,
-    handleExportDOCX
+    handleExportDOCX,
+    validationErrors,
+    validateCurrentStep
   }
 }

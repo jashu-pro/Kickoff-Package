@@ -330,9 +330,19 @@ export const ProjectCreation = () => {
               <Icon name="share" size={16} /> Share Preview Link
             </button>
             
+            {Object.keys(formState.validationErrors || {}).length > 0 && (
+              <div className="text-status-error text-xs font-semibold mr-2 animate-in fade-in">
+                {Object.values(formState.validationErrors)[0]}
+              </div>
+            )}
+            
             {currentStep < 6 ? (
               <button
-                onClick={() => setCurrentStep(prev => Math.min(6, prev + 1))}
+                onClick={() => {
+                  if (formState.validateCurrentStep(currentStep)) {
+                    setCurrentStep(prev => Math.min(6, prev + 1))
+                  }
+                }}
                 className="px-6 py-2 bg-primary text-white rounded-xl font-semibold text-xs flex items-center gap-1 hover:opacity-90 active:scale-95 transition-all shadow-sm"
               >
                 Next <Icon name="arrow_forward" size={16} />

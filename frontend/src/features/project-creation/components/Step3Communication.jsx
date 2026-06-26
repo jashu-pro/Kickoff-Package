@@ -43,13 +43,7 @@ export const Step3Communication = ({ formState }) => {
               placeholder="#proj-clientname"
               className="w-full bg-surface-base border border-border-subtle rounded-xl px-3.5 py-2.5 font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none"
               value={channels.length > 0 ? (channels[0].name || '') : ''}
-              onChange={(e) => {
-                if(channels.length === 0) {
-                  formState.setChannels([{ type: 'Slack', name: e.target.value, description: 'Primary communication channel', channel_url: '', is_active: true }])
-                } else {
-                  handleChannelChange(0, 'name', e.target.value)
-                }
-              }}
+              onChange={(e) => handleChannelChange(0, 'name', e.target.value)}
               onBlur={() => channels.length > 0 && handleChannelBlur(channels[0])}
              />
           </div>
