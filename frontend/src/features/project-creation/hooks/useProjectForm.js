@@ -445,12 +445,6 @@ export const useProjectForm = () => {
     showToast('Draft workspace cleared', 'info')
   }
 
-  useEffect(() => {
-    // Save draft whenever important state changes
-    if (localProjectId) {
-      saveDraft()
-    }
-  }, [formData, teamMembers, channels, meetings, clientContacts, milestones, integrations, risks, deliverables, currentStep, completenessScore])
 
   useEffect(() => {
     setValidationErrors({})
