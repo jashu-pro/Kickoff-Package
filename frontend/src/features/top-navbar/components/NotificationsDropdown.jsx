@@ -45,7 +45,7 @@ import { useToast } from '../../../components/Toast';
 import { db } from '../../../lib/db';
 
 export const NotificationsDropdown = ({ notificationState, profileState }) => {
-  const { showNotifications, setShowNotifications, notifications, activeFilter, setActiveFilter, notificationsPage, setNotificationsPage, totalNotificationsCount, loadingNotifications, unreadCount, notificationsRef, fetchNotificationsData, handleNotificationClick, handleMarkAllRead, handleDeleteAllNotifications, setNotifications, setUnreadCount, setTotalNotificationsCount } = notificationState;
+  const { showNotifications, setShowNotifications, notifications, activeFilter, setActiveFilter, notificationsPage, setNotificationsPage, totalNotificationsCount, loadingNotifications, isActionInProgress, unreadCount, notificationsRef, fetchNotificationsData, handleNotificationClick, handleMarkAllRead, handleDeleteAllNotifications, setNotifications, setUnreadCount, setTotalNotificationsCount } = notificationState;
   const { setShowProfile, setShowDeleteAllConfirm } = profileState || {};
   const { setProjectId } = useProject();
   const navigate = useNavigate();
@@ -78,18 +78,12 @@ export const NotificationsDropdown = ({ notificationState, profileState }) => {
                 <div className="flex items-center gap-2">
                   {unreadCount > 0 && (
                     <button
-                      onClick={async (e) => {
+                      disabled={isActionInProgress}
+                      onClick={(e) => {
                         e.stopPropagation()
-                        try {
-                          await db.notifications.markAllAsRead()
-                          setNotifications(prev => prev.map(n => ({ ...n, is_read: true })))
-                          setUnreadCount(0)
-                          localStorage.setItem('unread_notifications_count', '0')
-                        } catch (err) {
-                          showToast('Failed to mark all as read', 'error')
-                        }
+                        handleMarkAllRead()
                       }}
-                      className="text-[10px] text-primary hover:underline font-semibold"
+                      className="text-[10px] text-primary hover:underline font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Mark all
                     </button>
@@ -107,11 +101,12 @@ export const NotificationsDropdown = ({ notificationState, profileState }) => {
                   </button>
                   {notifications.length > 0 && (
                     <button
+                      disabled={isActionInProgress}
                       onClick={(e) => {
                         e.stopPropagation()
-                        setShowDeleteAllConfirm(true)
+                        if (!isActionInProgress) setShowDeleteAllConfirm(true)
                       }}
-                      className="text-[11px] text-status-error hover:underline font-semibold flex items-center gap-0.5"
+                      className="text-[11px] text-status-error hover:underline font-semibold flex items-center gap-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Icon name="delete" size={14} />
                       Delete all
@@ -223,8 +218,9 @@ export const NotificationsDropdown = ({ notificationState, profileState }) => {
                   </>
                 ) : (
                   <div className="p-8 text-center text-outline text-body-md flex flex-col items-center justify-center gap-2">
-                    <Icon name="notifications_off" size={32} className="opacity-40" />
-                    <span>No new notifications</span>
+                    <div className="text-3xl mb-1">🔔</div>
+                    <span className="font-semibold text-on-surface">No notifications yet</span>
+                    <span className="text-sm">You're all caught up!</span>
                   </div>
                 )}
               </div>
@@ -245,13 +241,14 @@ export const NotificationsDropdown = ({ notificationState, profileState }) => {
                 Cancel
               </button>
               <button
+                disabled={isActionInProgress}
                 onClick={async () => {
-                  setShowDeleteAllConfirm(false)
                   await handleDeleteAllNotifications()
+                  setShowDeleteAllConfirm(false)
                 }}
-                className="px-4 py-2 bg-status-error hover:bg-status-error/95 text-white font-semibold text-body-md rounded-xl shadow-md transition-all"
+                className="px-4 py-2 bg-status-error hover:bg-status-error/95 text-white font-semibold text-body-md rounded-xl shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Delete All
+                {isActionInProgress ? 'Deleting...' : 'Delete All'}
               </button>
             </div>
           </div>

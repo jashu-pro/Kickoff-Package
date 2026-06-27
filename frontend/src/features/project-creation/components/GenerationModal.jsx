@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from '../../../components/Icon';
 
 const STEPS = [
@@ -40,9 +41,19 @@ export const GenerationModal = ({ isOpen }) => {
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-surface/80 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="bg-surface-base border border-border-subtle rounded-3xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+  return createPortal(
+    <>
+      <div className="fixed inset-0 z-[100] bg-surface/80 backdrop-blur-sm animate-in fade-in duration-300"></div>
+      <div 
+        className="bg-surface-base border border-border-subtle rounded-3xl w-[calc(100%-2rem)] max-w-md shadow-2xl flex flex-col z-[101] overflow-hidden"
+        style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          maxHeight: '90vh'
+        }}
+      >
         
         <div className="p-8 pb-6 text-center space-y-4 border-b border-border-subtle shrink-0">
           <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2 text-primary animate-pulse">
@@ -82,6 +93,7 @@ export const GenerationModal = ({ isOpen }) => {
         </div>
 
       </div>
-    </div>
+    </>,
+    document.body
   );
 };

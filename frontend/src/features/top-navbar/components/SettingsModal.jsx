@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { Icon } from '../../../components/Icon';
 import { useProject } from '../../../context/ProjectContext';
@@ -14,9 +15,19 @@ export const SettingsModal = ({ profileState }) => {
   return (
     <>
       {/* Settings Modal */}
-      {isSettingsOpen && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 transition-all duration-300">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[85vh] min-h-[500px]">
+      {isSettingsOpen && createPortal(
+        <>
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] transition-all duration-300" onClick={() => setIsSettingsOpen(false)}></div>
+          <div 
+            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-[calc(100%-2rem)] max-w-3xl rounded-2xl shadow-2xl flex flex-col md:flex-row min-h-[500px] z-[101] overflow-hidden"
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              maxHeight: '90vh'
+            }}
+          >
             {/* Sidebar navigation */}
             <div className="w-full md:w-60 bg-slate-50 dark:bg-slate-955 border-r border-slate-200 dark:border-slate-800 p-5 flex flex-col justify-between">
               <div className="space-y-6">
@@ -240,7 +251,8 @@ export const SettingsModal = ({ profileState }) => {
               </div>
             </div>
           </div>
-        </div>
+        </>,
+        document.body
       )}
     </>
   );

@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { Icon } from '../../../components/Icon';
 import { useProject } from '../../../context/ProjectContext';
@@ -14,10 +15,20 @@ export const EditProfileModal = ({ profileState }) => {
   return (
     <>
       {/* Edit Profile Modal */}
-      {isEditProfileOpen && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 transition-all duration-300">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="px-6 py-4 border-b border-border-subtle dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-850">
+      {isEditProfileOpen && createPortal(
+        <>
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] transition-all duration-300" onClick={() => setIsEditProfileOpen(false)}></div>
+          <div 
+            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-[calc(100%-2rem)] max-w-md rounded-2xl shadow-2xl flex flex-col z-[101]"
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              maxHeight: '90vh'
+            }}
+          >
+            <div className="px-6 py-4 border-b border-border-subtle dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-850 shrink-0">
               <h3 className="font-semibold text-headline-sm text-on-surface">Edit Profile</h3>
               <button
                 onClick={() => setIsEditProfileOpen(false)}
@@ -93,7 +104,7 @@ export const EditProfileModal = ({ profileState }) => {
               </div>
             </div>
 
-            <div className="px-6 py-4 border-t border-border-subtle dark:border-slate-800 bg-slate-50 dark:bg-slate-850 flex justify-end gap-2.5">
+            <div className="px-6 py-4 border-t border-border-subtle dark:border-slate-800 bg-slate-50 dark:bg-slate-850 flex justify-end gap-2.5 shrink-0">
               <button
                 onClick={() => setIsEditProfileOpen(false)}
                 className="px-4 py-2 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-on-surface font-semibold text-body-md rounded-xl transition-all"
@@ -108,7 +119,8 @@ export const EditProfileModal = ({ profileState }) => {
               </button>
             </div>
           </div>
-        </div>
+        </>,
+        document.body
       )}
 
     </>

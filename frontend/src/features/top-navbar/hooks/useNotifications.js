@@ -17,6 +17,7 @@ export const useNotifications = () => {
   const [notificationsPage, setNotificationsPage] = useState(1)
   const [totalNotificationsCount, setTotalNotificationsCount] = useState(0)
   const [loadingNotifications, setLoadingNotifications] = useState(false)
+  const [isActionInProgress, setIsActionInProgress] = useState(false)
   const [unreadCount, setUnreadCount] = useState(() => parseInt(localStorage.getItem('unread_notifications_count') || '0'))
   
   const [activeProjectStats, setActiveProjectStats] = useState({
@@ -238,25 +239,37 @@ export const useNotifications = () => {
   }
   
   const handleMarkAllRead = async () => {
+    if (isActionInProgress) return;
+    setIsActionInProgress(true);
     try {
       await db.notifications.markAllAsRead()
       setNotifications(prev => prev.map(n => ({ ...n, is_read: true })))
       setUnreadCount(0)
-      showToast('All notifications marked as read', 'success')
+      localStorage.setItem('unread_notifications_count', '0')
+      showToast('All notifications marked as read.', 'success')
     } catch (e) {
       console.error(e)
+      showToast('Failed to mark all as read', 'error')
+    } finally {
+      setIsActionInProgress(false);
     }
   }
 
   const handleDeleteAllNotifications = async () => {
+    if (isActionInProgress) return;
+    setIsActionInProgress(true);
     try {
       await db.notifications.deleteAll()
       setNotifications([])
       setTotalNotificationsCount(0)
       setUnreadCount(0)
-      showToast('All notifications deleted', 'success')
+      localStorage.setItem('unread_notifications_count', '0')
+      showToast('All notifications deleted.', 'success')
     } catch (e) {
       console.error(e)
+      showToast('Failed to delete all notifications', 'error')
+    } finally {
+      setIsActionInProgress(false);
     }
   }
 
@@ -264,7 +277,7 @@ export const useNotifications = () => {
     showNotifications, setShowNotifications,
     notifications, activeFilter, setActiveFilter,
     notificationsPage, setNotificationsPage,
-    totalNotificationsCount, loadingNotifications,
+    totalNotificationsCount, loadingNotifications, isActionInProgress,
     unreadCount, notificationsRef,
     fetchNotificationsData, handleNotificationClick,
     handleMarkAllRead, handleDeleteAllNotifications,

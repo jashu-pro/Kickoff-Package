@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from '../../../components/Icon';
 import { INTEGRATION_CATEGORIES } from '../config/integrations.config';
 
@@ -52,10 +53,20 @@ export const CustomIntegrationModal = ({ isOpen, onClose, onSave }) => {
     onClose();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-surface w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="p-6 border-b border-border-subtle flex justify-between items-center bg-surface-container-lowest">
+  return createPortal(
+    <>
+      <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm" onClick={onClose}></div>
+      <div 
+        className="bg-surface w-[calc(100%-2rem)] max-w-2xl rounded-2xl shadow-2xl flex flex-col z-[101] overflow-hidden"
+        style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          maxHeight: '90vh'
+        }}
+      >
+        <div className="p-6 border-b border-border-subtle flex justify-between items-center bg-surface-container-lowest shrink-0">
           <h2 className="text-xl font-bold text-on-surface">Add Custom Integration</h2>
           <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface p-1 rounded-full hover:bg-surface-variant transition-colors">
             <Icon name="close" size={24} />
@@ -158,7 +169,7 @@ export const CustomIntegrationModal = ({ isOpen, onClose, onSave }) => {
           </form>
         </div>
 
-        <div className="p-6 border-t border-border-subtle bg-surface-container-lowest flex justify-end gap-3">
+        <div className="p-6 border-t border-border-subtle bg-surface-container-lowest flex justify-end gap-3 shrink-0">
           <button type="button" onClick={onClose} className="px-5 py-2.5 rounded-lg font-bold text-on-surface hover:bg-surface-variant transition-colors">
             Cancel
           </button>
@@ -167,6 +178,7 @@ export const CustomIntegrationModal = ({ isOpen, onClose, onSave }) => {
           </button>
         </div>
       </div>
-    </div>
+    </>,
+    document.body
   );
 };
